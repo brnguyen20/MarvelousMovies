@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Title Search</title>
+</head>
+<body>
+  <h1>Search for a Movie Title</h1>
+  <input type="text" id="movieIdInput" placeholder="Enter Movie ID">
+  <button onclick="searchMovie()">Search</button>
+  <p id="result"></p>
+
+  <script>
+    async function searchMovie() {
+      const movieId = document.getElementById("movieIdInput").value;
+      const result = document.getElementById("result");
+
+      if (!movieId) {
+        result.textContent = "Please enter a movie ID.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/title?id=${movieId}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch movie title");
+        }
+
+        const data = await response.json();
+        result.textContent = data.title ? `Movie Title: ${data.title}` : "Movie title not found";
+      } catch (error) {
+        console.error("Error:", error);
+        result.textContent = "Error fetching movie title. Please try again.";
+      }
+    }
+  </script>
+</body>
+</html>
