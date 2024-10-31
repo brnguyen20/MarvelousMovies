@@ -118,6 +118,23 @@ app.get(`/genre`, (req, res) => {
     });
   });
 
+  app.get("/images", (req, res) => {
+    let movieID = req.query.movieID;
+    let url = `https://api.themoviedb.org/3/movie/${movieID}/images`;
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        Authorization: apiKey,
+        Accept: 'application/json'
+      }
+    }).then(response => {
+      res.status(response.status).json(response.data);
+    }).catch(error => {
+      res.status(error.response.status).json({error : error.response.data});
+    });
+  });
+
 app.get("/title", async (req, res) => {
   const movieId = req.query.id;
 
