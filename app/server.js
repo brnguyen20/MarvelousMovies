@@ -79,6 +79,8 @@ function setContentType(ext, res) {
   }
 }
 
+const tmdbApiKey = env.tmdbApiKey;
+
 
 //add logic here
 app.get(`/genre`, (req, res) => {
@@ -99,7 +101,22 @@ app.get(`/genre`, (req, res) => {
     });
   });
 
-const tmdbApiKey = env.tmdbApiKey;
+  app.get(`/details`, (req, res) => {
+    let movieID = req.query.movieID;
+    let url = `https://api.themoviedb.org/3/movie/${movieID}?language=en-US`;
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        Authorization: apiKey,
+        Accept: 'application/json'
+      }
+    }).then(response => {
+      res.status(response.status).json(response.data);
+    }).catch(error => {
+      res.status(error.response.status).json({error : error.response.data});
+    });
+  });
 
 app.get("/title", async (req, res) => {
   const movieId = req.query.id;
