@@ -1,22 +1,26 @@
 // require() is Node's version of Python's import
-let http = require("http");
-let fs = require("fs");
-let path = require("path");
+let axios = require("axios");
 let express = require("express");
-let { Pool } = require("pg");
+let app = express();
+let path = require("path");
+
 let env = require("../env.json");
+let apiKey = env["api_key"];
 
 let hostname = "localhost";
 let port = 3000;
-let app = express();
 
-app.use(express.json());
-app.use(express.static("public"));
+let http = require("http");
+let fs = require("fs");
+let { Pool } = require("pg");
 
 let pool = new Pool(env);
 pool.connect().then(() => {
   console.log("Connected to database");
 });
+
+app.use(express.json());
+app.use(express.static("public"));
 
 // this function will be called whenever our server receives a request
 // args are request and response objects with these properties:
@@ -77,7 +81,23 @@ function setContentType(ext, res) {
 
 
 //add logic here
-
+app.get(`/genre`, (req, res) => {
+  let movieID = req.query.movieID;
+  let url = `https://api.themoviedb.org/3/movie/${movieID}?language=en-US`;
+  axios({
+    method: 'get',
+    url: url,
+    headers: {
+      Authorization: apiKey,
+      Accept: 'application/json'
+    }
+  }).then(response => {
+    const genreNames = (response.data.genres || []).map(genre => genre.name);
+    res.status(response.status).json({ genres: genreNames });
+  }).catch(error => {
+    res.status(error.response.status).json({error : error.response.data});
+  });
+});
 
 // sets the response body and sends the response to the client
 // should be called exactly once for each request
@@ -88,4 +108,3 @@ let server = http.createServer(handleRequest);
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
   });
-  
