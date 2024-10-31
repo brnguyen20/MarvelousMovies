@@ -1,12 +1,23 @@
 // require() is Node's version of Python's import
+<<<<<<< HEAD
+let http = require("http");
 let axios = require("axios");
+let fs = require("fs");
+let path = require("path");
+=======
+let axios = require("axios");
+>>>>>>> main
 let express = require("express");
 let app = express();
 let path = require("path");
 
 let env = require("../env.json");
+<<<<<<< HEAD
+let apiKey = env.api_key
+=======
 let apiKey = env["api_key"];
 
+>>>>>>> main
 let hostname = "localhost";
 let port = 3000;
 
@@ -82,6 +93,7 @@ function setContentType(ext, res) {
 const tmdbApiKey = env.tmdbApiKey;
 
 
+
 //add logic here
 app.get(`/genre`, (req, res) => {
   let movieID = req.query.movieID;
@@ -132,6 +144,34 @@ app.get(`/genre`, (req, res) => {
       res.status(response.status).json(response.data);
     }).catch(error => {
       res.status(error.response.status).json({error : error.response.data});
+    });
+  });
+
+  app.get(`/cast`, (req, res) => {
+    let movieID = req.query.movieID;
+    let url = `https://api.themoviedb.org/3/movie/${movieID}/credits`;
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        Authorization: apiKey,
+        Accept: 'application/json'
+      }
+    }).then(response => {
+      //console.log(response.data)
+      let data = response.data.cast
+      let cast = {}
+      for (let key in data) {
+        let person = data[key];
+        if (person.known_for_department === "Acting") {
+          cast[person.name] = person.character;
+        }
+      }
+      console.log(cast)
+      return res.status(200).json({ cast });
+    }).catch(error => {
+      console.log(error)
+      return res.status(400).json({error : error.data});
     });
   });
 
