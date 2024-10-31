@@ -22,7 +22,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:3000/title?id=${movieId}`);
+        const response = await fetch(`http://localhost:3000/title?movieID=${movieId}`);
         
         if (!response.ok) {
           throw new Error("Failed to fetch movie title");
