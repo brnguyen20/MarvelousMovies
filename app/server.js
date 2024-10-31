@@ -1,11 +1,12 @@
 // require() is Node's version of Python's import
 let http = require("http");
+let axios = require("axios");
 let fs = require("fs");
 let path = require("path");
 let express = require("express");
 let { Pool } = require("pg");
 let env = require("../env.json");
-
+let apiKey = env.api_key
 let hostname = "localhost";
 let port = 3000;
 let app = express();
@@ -76,9 +77,36 @@ function setContentType(ext, res) {
 }
 
 
+
 //add logic here
 
-
+app.get(`/cast`, (req, res) => {
+  let movieID = req.query.movieID;
+  let url = `https://api.themoviedb.org/3/movie/${movieID}/credits`;
+  axios({
+    method: 'get',
+    url: url,
+    headers: {
+      Authorization: apiKey,
+      Accept: 'application/json'
+    }
+  }).then(response => {
+    //console.log(response.data)
+    let data = response.data.cast
+    let cast = {}
+    for (let key in data) {
+      let person = data[key];
+      if (person.known_for_department === "Acting") {
+        cast[person.name] = person.character;
+      }
+    }
+    console.log(cast)
+    return res.status(200).json({ cast });
+  }).catch(error => {
+    console.log(error)
+    return res.status(400).json({error : error.data});
+  });
+});
 // sets the response body and sends the response to the client
 // should be called exactly once for each request
 
