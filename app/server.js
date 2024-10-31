@@ -78,6 +78,29 @@ function setContentType(ext, res) {
 
 //add logic here
 
+const tmdbApiKey = env.tmdbApiKey;
+
+app.get("/title", async (req, res) => {
+  const movieId = req.query.id;
+
+  if (!movieId) {
+    return res.status(400).json({ error: "Movie ID is required" });
+  }
+
+  try {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/movie/${movieId}`,
+      {
+        params: { api_key: tmdbApiKey },
+      }
+    );
+    const title = response.data.title;
+    res.json({ title });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch movie title" });
+  }
+});
 
 // sets the response body and sends the response to the client
 // should be called exactly once for each request
