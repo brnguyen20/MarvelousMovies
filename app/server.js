@@ -83,7 +83,7 @@ function setContentType(ext, res) {
 //add logic here
 app.get(`/images`, (req, res) => {
   let movieID = req.query.movieID;
-  let url = `https://api.themoviedb.org/3/movie/${movieID}?language=en-US`;
+  let url = `https://api.themoviedb.org/3/movie/${movieID}/images`;
   axios({
     method: 'get',
     url: url,
