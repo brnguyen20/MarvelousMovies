@@ -1,23 +1,9 @@
-// require() is Node's version of Python's import
-<<<<<<< HEAD
-let http = require("http");
 let axios = require("axios");
-let fs = require("fs");
 let path = require("path");
-=======
-let axios = require("axios");
->>>>>>> main
 let express = require("express");
 let app = express();
-let path = require("path");
 
 let env = require("../env.json");
-<<<<<<< HEAD
-let apiKey = env.api_key
-=======
-let apiKey = env["api_key"];
-
->>>>>>> main
 let hostname = "localhost";
 let port = 3000;
 
@@ -25,13 +11,15 @@ let http = require("http");
 let fs = require("fs");
 let { Pool } = require("pg");
 
-let pool = new Pool(env);
-pool.connect().then(() => {
-  console.log("Connected to database");
-});
+// let pool = new Pool(env);
+// pool.connect().then(() => {
+//   console.log("Connected to database");
+// });
 
 app.use(express.json());
 app.use(express.static("public"));
+
+const apiKey = env.api_key;
 
 // this function will be called whenever our server receives a request
 // args are request and response objects with these properties:
@@ -89,10 +77,6 @@ function setContentType(ext, res) {
       break;
   }
 }
-
-const tmdbApiKey = env.tmdbApiKey;
-
-
 
 //add logic here
 app.get(`/genre`, (req, res) => {
@@ -167,7 +151,6 @@ app.get(`/genre`, (req, res) => {
           cast[person.name] = person.character;
         }
       }
-      console.log(cast)
       return res.status(200).json({ cast });
     }).catch(error => {
       console.log(error)
@@ -176,7 +159,7 @@ app.get(`/genre`, (req, res) => {
   });
 
 app.get("/title", async (req, res) => {
-  const movieId = req.query.id;
+  const movieId = req.query.movieID;
 
   if (!movieId) {
     return res.status(400).json({ error: "Movie ID is required" });
@@ -186,7 +169,10 @@ app.get("/title", async (req, res) => {
     const response = await axios.get(
       `https://api.themoviedb.org/3/movie/${movieId}`,
       {
-        params: { api_key: tmdbApiKey },
+        headers: {
+          Authorization: apiKey,
+          Accept: 'application/json'
+        }
       }
     );
     const title = response.data.title;
