@@ -1,12 +1,9 @@
-// require() is Node's version of Python's import
 let axios = require("axios");
+let path = require("path");
 let express = require("express");
 let app = express();
-let path = require("path");
 
 let env = require("../env.json");
-let apiKey = env["api_key"];
-
 let hostname = "localhost";
 let port = 3000;
 
@@ -14,13 +11,15 @@ let http = require("http");
 let fs = require("fs");
 let { Pool } = require("pg");
 
-let pool = new Pool(env);
-pool.connect().then(() => {
-  console.log("Connected to database");
-});
+// let pool = new Pool(env);
+// pool.connect().then(() => {
+//   console.log("Connected to database");
+// });
 
 app.use(express.json());
 app.use(express.static("public"));
+
+const apiKey = env.api_key;
 
 // this function will be called whenever our server receives a request
 // args are request and response objects with these properties:
@@ -79,9 +78,6 @@ function setContentType(ext, res) {
   }
 }
 
-const tmdbApiKey = env.tmdbApiKey;
-
-
 //add logic here
 app.get(`/genre`, (req, res) => {
   let movieID = req.query.movieID;
@@ -118,8 +114,52 @@ app.get(`/genre`, (req, res) => {
     });
   });
 
+  app.get("/images", (req, res) => {
+    let movieID = req.query.movieID;
+    let url = `https://api.themoviedb.org/3/movie/${movieID}/images`;
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        Authorization: apiKey,
+        Accept: 'application/json'
+      }
+    }).then(response => {
+      res.status(response.status).json(response.data);
+    }).catch(error => {
+      res.status(error.response.status).json({error : error.response.data});
+    });
+  });
+
+  app.get(`/cast`, (req, res) => {
+    let movieID = req.query.movieID;
+    let url = `https://api.themoviedb.org/3/movie/${movieID}/credits`;
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        Authorization: apiKey,
+        Accept: 'application/json'
+      }
+    }).then(response => {
+      //console.log(response.data)
+      let data = response.data.cast
+      let cast = {}
+      for (let key in data) {
+        let person = data[key];
+        if (person.known_for_department === "Acting") {
+          cast[person.name] = person.character;
+        }
+      }
+      return res.status(200).json({ cast });
+    }).catch(error => {
+      console.log(error)
+      return res.status(400).json({error : error.data});
+    });
+  });
+
 app.get("/title", async (req, res) => {
-  const movieId = req.query.id;
+  const movieId = req.query.movieID;
 
   if (!movieId) {
     return res.status(400).json({ error: "Movie ID is required" });
@@ -129,7 +169,10 @@ app.get("/title", async (req, res) => {
     const response = await axios.get(
       `https://api.themoviedb.org/3/movie/${movieId}`,
       {
-        params: { api_key: tmdbApiKey },
+        headers: {
+          Authorization: apiKey,
+          Accept: 'application/json'
+        }
       }
     );
     const title = response.data.title;
