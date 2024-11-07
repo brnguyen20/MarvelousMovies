@@ -23,11 +23,11 @@ create table Users (
     custom_lists JSON
 );
 
-create table MoviePage (
-    movie_id SERIAL PRIMARY KEY,
-    movie_title VARCHAR(255) NOT NULL,
-    replies JSON
-);
+-- create table MoviePage (
+--     movie_id SERIAL PRIMARY KEY,
+--     movie_title VARCHAR(255) NOT NULL,
+--     replies JSON
+-- );
 
 create table Review (
     review_id SERIAL PRIMARY KEY,
@@ -40,10 +40,6 @@ create table Review (
     FOREIGN KEY (movie_id) REFERENCES MoviePage(movie_id) ON DELETE CASCADE
 );
 
-SELECT * FROM Users;
-SELECT * FROM MoviePage;
-SELECT * FROM Review;
-
 -- Testing Purposes (Save for later)
 -- CREATE TABLE Replies (
 --     reply_id SERIAL PRIMARY KEY,
@@ -54,24 +50,81 @@ SELECT * FROM Review;
 --     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
 -- );
 
--- Insert dummy data
--- INSERT INTO Users (name, email, location, activity, social_media_links) 
--- VALUES 
--- ('John Doe', 'john@example.com', 'New York', '{}', '{"Twitter": "https://twitter.com/johndoe"}'),
--- ('Jane Smith', 'jane@example.com', 'Los Angeles', '{}', '{"Instagram": "https://instagram.com/janesmith"}');
+-- Insert dummy data------------------------------------------------------------------------------------------------------
+--Test Without JSON
+INSERT INTO Users (name, email, location, social_media_links) 
+VALUES 
+('Rob Simmons', 'Robs-email@example.com', 'PA', '{"Twitter": "https://twitter.com/notarealaccount"}'),
+('Elvis', 'Elvis-email@example.com', 'Elvis house', '{"Instagram": "https://instagram.com/fakeaccoount"}');
 
+--Test With JSON
+-- INSERT INTO Users (name, email, activity) 
+-- VALUES 
+-- ('Jeffery', 'Jefferys-email@example.com', '{
+--     "last_login": "2024-11-06T14:30:00Z",
+--     "recent_activities": [
+--         {
+--             "type": "watched",
+--             "movie_id": 123,
+--             "title": "Inception",
+--             "timestamp": "2024-11-05T18:45:00Z"
+--         },
+--         {
+--             "type": "reviewed",
+--             "movie_id": 456,
+--             "title": "The Matrix",
+--             "timestamp": "2024-11-04T16:30:00Z",
+--             "review": "Amazing movie, loved the action scenes!"
+--         },
+--         {
+--             "type": "favorited",
+--             "movie_id": 789,
+--             "title": "Interstellar",
+--             "timestamp": "2024-11-03T14:15:00Z"
+--         }]}'),
+-- ('Sig', 'Sigs-email@example.com', '{
+--     "last_login": "2024-10-06T14:30:00Z",
+--     "recent_activities": [
+--         {
+--             "type": "watched",
+--             "movie_id": 550,
+--             "title": "Fight Club",
+--             "timestamp": "2024-10-05T18:45:00Z"
+--         },
+--         {
+--             "type": "reviewed",
+--             "movie_id": 550,
+--             "title": "Fight Club",
+--             "timestamp": "2024-10-04T16:30:00Z",
+--             "review": "Dope movie yo!"
+--         },
+--         {
+--             "type": "favorited",
+--             "movie_id": 550,
+--             "title": "Fight Club",
+--             "timestamp": "2024-10-03T14:15:00Z"
+--         }
+--     ]
+-- }');
+
+--We may not need a database for this part if we get the movies from the API
 -- INSERT INTO MoviePage (movie_title) 
 -- VALUES 
 -- ('Inception'),
 -- ('The Matrix'),
 -- ('Interstellar');
 
--- INSERT INTO Review (user_id, movie_id, star_rating, content, likes) 
--- VALUES 
--- (1, 1, 5, 'Amazing movie with stunning visuals!', 10),
--- (2, 2, 4, 'A classic sci-fi masterpiece!', 15);
+INSERT INTO Review (user_id, movie_id, star_rating, content, likes) 
+VALUES 
+(1, 550, 5, 'Dont talk about Fight Club!', 10),
+(2, 2, 4, 'A classic sci-fi masterpiece!', 15);
+--(12, 567, 1, 'fake movies really stink', 1);
 
 -- INSERT INTO Replies (review_id, user_id, content) 
 -- VALUES 
 -- (1, 2, 'I totally agree! The visuals were incredible.'),
 -- (2, 1, 'Absolutely! It never gets old.');
+
+SELECT * FROM Users;
+--SELECT * FROM MoviePage;
+SELECT * FROM Review;
