@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  #searchInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  #movieGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+  }
+  
+  .moviePoster {
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .moviePoster:hover {
+    transform: scale(1.05);
+  }
+  
