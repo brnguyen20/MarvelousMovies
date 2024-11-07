@@ -37,6 +37,11 @@ CREATE TABLE Review (
     --FOREIGN KEY (movie_id) REFERENCES MoviePage(movie_id) ON DELETE CASCADE
 );
 
+CREATE TABLE MovieComments(
+    movie_id INT,
+    comment_thread JSON
+);
+
 -- Testing Purposes (Save for later)
 -- CREATE TABLE Replies (
 --     reply_id SERIAL PRIMARY KEY,
@@ -117,5 +122,5 @@ VALUES
 
 -- Perform the SELECT queries at the end
 SELECT * FROM Users;
--- SELECT * FROM MoviePage;
 SELECT * FROM Review;
+SELECT * FROM MovieComments;
