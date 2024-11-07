@@ -183,6 +183,61 @@ app.get("/title", async (req, res) => {
   }
 });
 
+app.get("/search", async (req, res) => {
+  const query = req.query.query;
+
+  if (!query) {
+    return res.status(400).json({ error: "Movie name is required" });
+  }
+
+  try {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/search/movie`,
+      {
+        params: {
+          query, // movie name
+          language: "en-US",
+        },
+        headers: {
+          Accept: "application/json",
+          Authorization: apiKey, 
+        },
+      }
+    );
+
+    if (response.data.results && response.data.results.length > 0) {
+      res.json(response.data.results); 
+    } else {
+      res.status(404).json({ error: "No movies found with that name" });
+    }
+  } catch (error) {
+    console.error("Error searching for movie:", error);
+    res.status(500).json({ error: "Failed to search for movie" });
+  }
+});
+
+
+app.get('/popular', async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/movie/popular`,
+      {
+        headers: {
+          Authorization: apiKey, 
+          Accept: 'application/json',
+        },
+        params: {
+          language: 'en-US',
+        },
+      }
+    );
+    res.json(response.data.results); 
+  } catch (error) {
+    console.error('Error fetching popular movies:', error);
+    res.status(500).json({ error: 'Failed to fetch popular movies' });
+  }
+});
+
 // sets the response body and sends the response to the client
 // should be called exactly once for each request
 
