@@ -1,3 +1,6 @@
+--command
+--psql -U postgres -f setup.sql
+
 -- Drop the database if it exists (to reset it completely)
 DROP DATABASE IF EXISTS marvelousmovies;
 
