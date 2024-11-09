@@ -15,6 +15,38 @@ class Comment {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    fetch(`/load?movieID=278`) // placeholder/hardcoded movieID for now
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        comment_thread = JSON.stringify(data.response);
+        commentsData = createComments(comment_thread)
+        console.log(commentsData)
+        renderAllComments()
+
+    });
+});
+
+function createComments(data) {
+    if (!Array.isArray(data)) {
+        return [];
+    }
+
+    return data.map(item => {
+        // Create a Comment object for each comment
+        const commentObj = new Comment(
+            item.user,
+            item.comment,
+            createComments(item.replies) // Recursively process replies
+        );
+        return commentObj;
+    });
+}
+
 //Post top-level comment
 document.getElementById('commentButton').addEventListener('click', function() {
     let commentText = document.getElementById('commentText').value;
