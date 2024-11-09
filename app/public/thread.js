@@ -23,29 +23,25 @@ document.addEventListener("DOMContentLoaded", function() {
             alert(data.error);
             return;
         }
-        comment_thread = JSON.stringify(data.response);
-        commentsData = createComments(comment_thread)
-        console.log(commentsData)
-        renderAllComments()
+        
+        data.comments.forEach(comment => {
+            // Top-level comments
+            postComment("top-level", comment.comment);
+
+            // process replies
+            if (comment.replies && comment.replies.length > 0) {
+                comment.replies.forEach(reply => {
+                    // Replies for the top-level comment
+                    postComment("reply", reply.comment, commentsData[commentsData.length - 1]);
+                });
+            }
+        });
+
+        renderAllComments(); nts
 
     });
 });
 
-function createComments(data) {
-    if (!Array.isArray(data)) {
-        return [];
-    }
-
-    return data.map(item => {
-        // Create a Comment object for each comment
-        const commentObj = new Comment(
-            item.user,
-            item.comment,
-            createComments(item.replies) // Recursively process replies
-        );
-        return commentObj;
-    });
-}
 
 //Post top-level comment
 document.getElementById('commentButton').addEventListener('click', function() {
@@ -80,6 +76,7 @@ function renderAllComments() {
     commentsContainer.innerHTML = ''; // Can I use innerHTML?
 
     commentsData.forEach(comment => renderComment(comment, commentsContainer));
+    console.log(commentsData)
 }
 
 // Create posted-comment
