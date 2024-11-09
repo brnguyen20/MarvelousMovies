@@ -11,6 +11,7 @@ class Comment {
     constructor(type, text) {
         this.type = type; // top-level or reply
         this.text = text;
+    //    this.user = int; // to-do
         this.replies = [];
     }
 }
@@ -26,18 +27,18 @@ document.addEventListener("DOMContentLoaded", function() {
         
         data.comments.forEach(comment => {
             // Top-level comments
-            postComment("top-level", comment.comment);
+            generateComment("top-level", comment.comment);
 
             // process replies
             if (comment.replies && comment.replies.length > 0) {
                 comment.replies.forEach(reply => {
                     // Replies for the top-level comment
-                    postComment("reply", reply.comment, commentsData[commentsData.length - 1]);
+                    generateComment("reply", reply.comment, commentsData[commentsData.length - 1]);
                 });
             }
         });
 
-        renderAllComments(); nts
+        renderAllComments();
 
     });
 });
@@ -51,6 +52,46 @@ document.getElementById('commentButton').addEventListener('click', function() {
         document.getElementById('commentText').value = '';
     }
 });
+
+
+function generateComment(commentType, commentText, parent = null) {
+    let comment = new Comment(commentType, commentText);
+
+    // reply
+    if (parent) {
+        parent.replies.push(comment);
+        renderComment(comment, parent.div);
+    }
+    // top-level comment
+    else {
+        commentsData.push(comment);
+        renderComment(comment, document.getElementById('comments'))
+    }
+}
+
+function saveComments(){
+    fetch('/save-comments', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            movie_id: 278, //temporary hard-code
+            comment_thread: commentsData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        console.log('Comments successfully saved:', data);
+    })
+    .catch(error => {
+        console.error('Error saving comments:', error);
+    });
+}
 
 //Creates parent-childen relationship between comments/replies and displays them
 function postComment(commentType, commentText, parent = null) {
@@ -68,7 +109,7 @@ function postComment(commentType, commentText, parent = null) {
     }
 
     renderAllComments();
-    console.log(JSON.stringify(commentsData, null, 2)); // REPLACE WITH CALL TO DATABASE TO WRITE TO TABLE
+    //saveComments() // to-do
 }
 
 function renderAllComments() {

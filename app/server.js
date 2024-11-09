@@ -229,6 +229,21 @@ app.get(`/load`, (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   })
 });
+app.post('/save-comments', (req, res) => {
+  const { movie_id, comment_thread } = req.body;
+
+  pool.query(
+      'INSERT INTO MovieComments (movie_id, comment_thread) VALUES ($1, $2) ON CONFLICT (movie_id) DO UPDATE SET comment_thread = $2',
+      [movie_id, comment_thread]
+  )
+  .then(() => {
+      res.status(200).json({ success: true });
+  })
+  .catch((error) => {
+      console.error('Error inserting comments:', error);
+      res.status(500).json({ error: 'Failed to save comments' });
+  });
+});
 
 app.get('/popular', async (req, res) => {
   try {
