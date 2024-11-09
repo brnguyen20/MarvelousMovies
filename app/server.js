@@ -11,10 +11,10 @@ let http = require("http");
 let fs = require("fs");
 let { Pool } = require("pg");
 
-// let pool = new Pool(env);
-// pool.connect().then(() => {
-//   console.log("Connected to database");
-// });
+let pool = new Pool(env);
+pool.connect().then(() => {
+  console.log("Connected to database");
+});
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -216,6 +216,34 @@ app.get("/search", async (req, res) => {
   }
 });
 
+app.get(`/load`, (req, res) => {
+  let movieID = req.query.movieID;
+  console.log(movieID)
+  pool.query(
+    'SELECT comment_thread FROM MovieComments WHERE movie_id = $1', [movieID]
+  ).then((result) => {
+    console.log(result.rows[0].comment_thread)
+    res.status(200).json(result.rows[0].comment_thread);
+  }).catch((error) => {
+    console.error("Query error", error);
+    res.status(500).json({ error: "Internal server error" });
+  })
+});
+app.post('/save-comments', (req, res) => {
+  const { movie_id, comment_thread } = req.body;
+
+  pool.query(
+      'INSERT INTO MovieComments (movie_id, comment_thread) VALUES ($1, $2) ON CONFLICT (movie_id) DO UPDATE SET comment_thread = $2',
+      [movie_id, comment_thread]
+  )
+  .then(() => {
+      res.status(200).json({ success: true });
+  })
+  .catch((error) => {
+      console.error('Error inserting comments:', error);
+      res.status(500).json({ error: 'Failed to save comments' });
+  });
+});
 
 app.get('/popular', async (req, res) => {
   try {

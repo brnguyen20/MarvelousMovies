@@ -121,6 +121,54 @@ VALUES
 -- (2, 1, 'Absolutely! It never gets old.');
 
 -- Perform the SELECT queries at the end
-SELECT * FROM Users;
-SELECT * FROM Review;
+INSERT INTO MovieComments (movie_id, comment_thread)
+VALUES
+    (278, 
+     '{
+        "comments": [
+            {
+                "user": "JohnDoe",
+                "comment": "This movie was outstanding!",
+                "replies": [
+                    {
+                        "user": "JaneDoe",
+                        "comment": "I think so too.",
+                        "replies": [
+                            {
+                                "user": "JoeC",
+                                "comment": "Agreed, it was a masterpiece.",
+                                "replies": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "user": "AliceSmith",
+                "comment": "Loved it from start to finish.",
+                "replies": []
+            }
+        ]
+     }'::json),
+    (238, 
+     '{
+        "comments": [
+            {
+                "user": "BobJohnson",
+                "comment": "A classic that never gets old.",
+                "replies": [
+                    {
+                        "user": "CharlieBrown",
+                        "comment": "Absolutely, its timeless.",
+                        "replies": []
+                    }
+                ]
+            }
+        ]
+     }'::json);
+
+
+
+-- SELECT * FROM Users;
+-- SELECT * FROM Review;
 SELECT * FROM MovieComments;
