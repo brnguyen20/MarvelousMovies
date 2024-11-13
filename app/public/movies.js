@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
           img.src = `${baseImageUrl}${movie.poster_path}`;
           img.className = 'moviePoster';
           movieGrid.appendChild(img);
+          img.addEventListener("click", () => {
+            const moviePage = `http://localhost:3000/index.html?movieId=${movie.id}`; // Replace with your desired link
+            window.open(moviePage, "_blank"); // "_blank" opens in a new tab
+          })
         }
       });
     };
