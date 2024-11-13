@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(response => response.json())
     .then(data => {
       const detailsElement = document.getElementById("movieDetails");
+      const titleElement = document.getElementById("movieTitle")
+      titleElement.textContent = data.original_title
       detailsElement.textContent = JSON.stringify(data);
     })
     .catch(error => console.error("Error fetching details:", error));
