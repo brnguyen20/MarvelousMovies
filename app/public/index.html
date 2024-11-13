@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Movie Information</title>
+  <link rel="stylesheet" href="thread.css">
 </head>
 <body>
   <h1>Movie Information</h1>
@@ -23,6 +24,18 @@
   <h2>Images:</h2>
   <div id="movieImages"></div>
 
+  <div id="topLevelComment">
+    <form id="commentForm">
+        <div class="comment-box">
+            <textarea id="commentText" name="commentText" placeholder="Add a comment"></textarea>
+            <button type="button" id="commentButton">Comment</button>
+        </div>
+    </form>
+  </div>
+
+  <div id="comments"></div>
+
   <script src="movieInfo.js"></script>
+  <script src="thread.js"></script>
 </body>
 </html>

@@ -222,8 +222,10 @@ app.get(`/load`, (req, res) => {
   pool.query(
     'SELECT comment_thread FROM MovieComments WHERE movie_id = $1', [movieID]
   ).then((result) => {
-    console.log(result.rows[0].comment_thread)
-    res.status(200).json(result.rows[0].comment_thread);
+    if (result.rows.length > 0) {
+      console.log(result.rows[0].comment_thread)
+      res.status(200).json(result.rows[0].comment_thread);
+    }
   }).catch((error) => {
     console.error("Query error", error);
     res.status(500).json({ error: "Internal server error" });
