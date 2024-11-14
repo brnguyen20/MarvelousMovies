@@ -25,3 +25,13 @@ Database Procedure
 	postgres should be replaced with your username.
 3. It will promt you to enter your passwerd.
 4. After that it will automatically create the database, create the tables, and insert dummy data.
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Updated Procedure:
+
+1. Run "psql -U postgres -f setup.sql" to create the database and tables
+2. Run "node app/dummy.js" to insert dummy data
+3. Run "npm run start" to start the server
+   

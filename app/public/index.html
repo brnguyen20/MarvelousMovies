@@ -1,34 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Movie Information</title>
-</head>
-<body>
-  <h1>Movie Information Lookup</h1>
+<html>
+  <head>
+    <title>Marvelous Movies - Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 50px;
+      }
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 300px;
+      }
+      input {
+        padding: 8px;
+        margin: 5px 0;
+      }
+      button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .error-message {
+        color: red;
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to Marvelous Movies</h1>
+    <div class="login-form">
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="login()">Log in</button>
+      <div id="error-message" class="error-message">
+        Invalid username or password
+      </div>
+    </div>
+    <script>
+      async function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const errorMessage = document.getElementById("error-message");
+        
+        try {
+          const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+          });
 
-  <form id="movieForm">
-    <label for="movieName">Enter Movie Name:</label>
-    <input type="text" id="movieName" name="movieName">
-    <button type="button" id="submitButton">Get Movie Info</button>
-  </form>
+          if (response.ok) {
+            window.location.href = '/movies.html';
+          } else {
+            errorMessage.style.display = 'block';
+            document.getElementById("password").value = ''; 
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          errorMessage.style.display = 'block';
+        }
+      }
 
-  <h2>Title:</h2>
-  <p id="movieTitle"></p>
-
-  <h2>Genre:</h2>
-  <p id="movieGenre"></p>
-
-  <h2>Details:</h2>
-  <p id="movieDetails"></p>
-
-  <h2>Cast:</h2>
-  <div id="movieCast"></div>
-
-  <h2>Images:</h2>
-  <div id="movieImages"></div>
-
-  <script src="movieInfo.js"></script>
-</body>
+      document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          login();
+        }
+      });
+    </script>
+  </body>
 </html>
