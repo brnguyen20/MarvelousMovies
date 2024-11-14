@@ -38,7 +38,7 @@ CREATE TABLE Review (
 );
 
 CREATE TABLE MovieComments(
-    movie_id INT,
+    movie_id SERIAL PRIMARY KEY,
     comment_thread JSON
 );
 
@@ -128,15 +128,17 @@ VALUES
         "comments": [
             {
                 "user": "JohnDoe",
-                "comment": "This movie was outstanding!",
+                "text": "This movie was outstanding!",
                 "replies": [
                     {
                         "user": "JaneDoe",
-                        "comment": "I think so too.",
+                        "type": "top-level",
+                        "text": "I think so too.",
                         "replies": [
                             {
                                 "user": "JoeC",
-                                "comment": "Agreed, it was a masterpiece.",
+                                "type": "reply",
+                                "text": "Agreed, it was a masterpiece.",
                                 "replies": []
                             }
                         ]
@@ -145,7 +147,8 @@ VALUES
             },
             {
                 "user": "AliceSmith",
-                "comment": "Loved it from start to finish.",
+                "type": "top-level",
+                "text": "Loved it from start to finish.",
                 "replies": []
             }
         ]
@@ -159,13 +162,58 @@ VALUES
                 "replies": [
                     {
                         "user": "CharlieBrown",
-                        "comment": "Absolutely, its timeless.",
+                        "type": "top-level",
+                        "text": "Absolutely, its timeless.",
                         "replies": []
                     }
                 ]
             }
         ]
-     }'::json);
+     }'::json),
+     (533535, 
+     '{
+        "comments": [
+            {
+                "user": "Unknown",
+                "type": "top-level",
+                "text": "this is a deadpool and wolverine top-level comment",
+                "replies": [
+                    {
+                        "user": "Unknown",
+                        "type": "reply",
+                        "text": "this is a reply to a top-level comment",
+                        "replies": [
+                            {
+                                "user": "Unknown",
+                                "type": "reply",
+                                "text": "this is a reply to a reply",
+                                "replies": [
+                                    {
+                                        "user": "Unknown",
+                                        "type": "reply",
+                                        "text": "this is a reply to a reply to a reply",
+                                        "replies": []
+                                    }
+                                ]
+                            },
+                            {
+                                "user": "Unknown",
+                                "type": "reply",
+                                "text": "this is another reply to a reply",
+                                "replies": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "user": "Unknown",
+                "type": "top-level",
+                "text": "this is another top-level comment",
+                "replies": []
+            }
+        ]
+     }'::json);;
 
 
 
