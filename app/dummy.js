@@ -103,7 +103,6 @@ const dummyMovieComments = [
 
 pool.connect().then(async (client) => {
   try {
-    // Insert Users
     for (const userData of dummyUsers) {
       const hash = await argon2.hash(userData.password);
       await client.query(
@@ -130,13 +129,11 @@ pool.connect().then(async (client) => {
       console.log(`Inserted user: ${userData.username}`);
     }
 
-    // Get user_ids for reviews
     const userResult = await client.query("SELECT user_id, username FROM Users");
     const userMap = Object.fromEntries(
       userResult.rows.map(row => [row.username, row.user_id])
     );
 
-    // Insert Reviews
     for (const review of dummyReviews) {
       await client.query(
         `INSERT INTO review (user_id, movie_id, star_rating, content, likes)
@@ -146,7 +143,6 @@ pool.connect().then(async (client) => {
       console.log(`Inserted review for movie: ${review.movie_id}`);
     }
 
-    // Insert MovieComments
     for (const commentData of dummyMovieComments) {
       await client.query(
         `INSERT INTO moviecomments (movie_id, comment_thread)
@@ -156,7 +152,6 @@ pool.connect().then(async (client) => {
       console.log(`Inserted comments for movie: ${commentData.movie_id}`);
     }
 
-    // Log the results
     console.log("\nInserted Users:");
     const users = await client.query("SELECT * FROM Users");
     console.log(users.rows);

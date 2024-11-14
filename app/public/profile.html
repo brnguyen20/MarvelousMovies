@@ -77,30 +77,35 @@
                 }
                 const data = await response.json();
                 
-                // Update the DOM with user data
                 document.getElementById('username').textContent = data.username || 'N/A';
                 document.getElementById('name').textContent = data.name || 'N/A';
                 document.getElementById('email').textContent = data.email || 'N/A';
                 document.getElementById('location').textContent = data.location || 'N/A';
                 
-                // Handle JSON fields
                 const filmsWatched = data.films_watched_list ? 
-                    JSON.stringify(data.films_watched_list, null, 2) : 'None';
+                    JSON.stringify(data.films_watched_list) : 'None';
                 const favorites = data.favorites_list ? 
-                    JSON.stringify(data.favorites_list, null, 2) : 'None';
+                    JSON.stringify(data.favorites_list) : 'None';
                 
                 document.getElementById('filmsWatched').textContent = filmsWatched;
                 document.getElementById('favorites').textContent = favorites;
 
             } catch (error) {
                 console.error('Error loading profile:', error);
-                document.getElementById('profileData').innerHTML = 
-                    '<p style="color: red;">Error loading profile data. Please try again later.</p>';
+                const errorMessage = document.createElement('p');
+                errorMessage.style.color = 'red';
+                errorMessage.textContent = 'Error loading profile data. Please try again later.';
+
+                const profileData = document.getElementById('profileData');
+                
+                while (profileData.firstChild) {
+                    profileData.removeChild(profileData.firstChild);
+                }
+                profileData.appendChild(errorMessage);
             }
         }
 
-        // Load profile data when page loads
         window.addEventListener('load', loadProfile);
     </script>
 </body>
-</html> 
+</html>

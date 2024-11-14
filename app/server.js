@@ -3,9 +3,9 @@ let path = require("path");
 let express = require("express");
 let app = express();
 let { Pool } = require("pg");
-let argon2 = require("argon2"); // Password hashing
-let cookieParser = require("cookie-parser"); // Cookie handling
-let crypto = require("crypto"); // Token generation
+let argon2 = require("argon2"); 
+let cookieParser = require("cookie-parser"); 
+let crypto = require("crypto"); 
 let env = require("../env.json");
 let hostname = "localhost";
 let port = 3000;
@@ -21,7 +21,6 @@ pool.connect().then(() => {
 app.use(express.json());
 app.use(cookieParser());
 
-// Move the authorize middleware here, before it's used
 let authorize = (req, res, next) => {
   let { token } = req.cookies;
   if (!token || !tokenStorage.hasOwnProperty(token)) {
@@ -30,42 +29,34 @@ let authorize = (req, res, next) => {
   next();
 };
 
-// Now use the middleware
 app.use('/movies.html', authorize);
 app.use('/profile.html', authorize);
 app.get('/', (req, res) => {
     res.redirect('/index.html');
 });
 
-// Add static file serving after the authorization middleware
 app.use(express.static("public"));
 
 
 const apiKey = env.api_key;
 
-//AUTH ENDPOINTS
 
-// In-memory token storage (for demonstration purposes)
 let tokenStorage = {};
 
-// Cookie options
 let cookieOptions = {
   httpOnly: true,
   secure: false,
   sameSite: "lax",
 };
 
-// Function to generate a random 32-byte token
 function makeToken() {
   return crypto.randomBytes(32).toString("hex");
 }
 
-// Function to validate login request body
 function validateLogin(body) {
-  return body.username && body.password; // Simple validation for demonstration
+  return body.username && body.password;
 }
 
-// Account creation endpoint
 app.post("/create", async (req, res) => {
   let { username, password } = req.body;
 
@@ -73,7 +64,6 @@ app.post("/create", async (req, res) => {
     return res.status(400).send("Invalid request data.");
   }
 
-  // Hash the password
   let hash;
   try {
     hash = await argon2.hash(password);
@@ -82,7 +72,6 @@ app.post("/create", async (req, res) => {
     return res.sendStatus(500);
   }
 
-  // Insert the user into the database
   try {
     await pool.query(`
       INSERT INTO users (
@@ -101,13 +90,11 @@ app.post("/create", async (req, res) => {
     return res.sendStatus(500);
   }
 
-  // Automatically log in after creating the account
   let token = makeToken();
   tokenStorage[token] = username;
   return res.cookie("token", token, cookieOptions).send("Account created and logged in.");
 });
 
-// Login endpoint
 app.post("/login", async (req, res) => {
   let { username, password } = req.body;
 
@@ -123,14 +110,12 @@ app.post("/login", async (req, res) => {
     return res.sendStatus(500);
   }
 
-  // Username not found
   if (result.rows.length === 0) {
     return res.status(400).send("Invalid username or password.");
   }
 
   let hash = result.rows[0].password;
 
-  // Verify the password
   let verifyResult;
   try {
     verifyResult = await argon2.verify(hash, password);
@@ -143,13 +128,11 @@ app.post("/login", async (req, res) => {
     return res.status(400).send("Invalid username or password.");
   }
 
-  // Generate login token and set it as a cookie
   let token = makeToken();
   tokenStorage[token] = username;
   return res.cookie("token", token, cookieOptions).send("Logged in successfully.");
 });
 
-// Logout endpoint
 app.post("/logout", (req, res) => {
   let { token } = req.cookies;
 
@@ -161,17 +144,14 @@ app.post("/logout", (req, res) => {
   return res.clearCookie("token", cookieOptions).send("Logged out successfully.");
 });
 
-// Public endpoint (no authorization required)
 app.get("/public", (req, res) => {
   return res.send("A public message\n");
 });
 
-// Private endpoint (authorization required)
 app.get("/private", authorize, (req, res) => {
   return res.send("A private message\n");
 });
 
-//MOVIE ENDPOINTS
 app.get(`/genre`, (req, res) => {
   let movieID = req.query.movieID;
   let url = `https://api.themoviedb.org/3/movie/${movieID}?language=en-US`;
