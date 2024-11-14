@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .profile-field {
+            margin: 10px 0;
+        }
+        .profile-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .back-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='/movies.html'">Back to Movies</button>
+    <div class="profile-container" id="profileData">
+        <h1>User Profile</h1>
+        <div class="profile-field">
+            <span class="profile-label">Username:</span>
+            <span id="username"></span>
+        </div>
+        <div class="profile-field">
+            <span class="profile-label">Name:</span>
+            <span id="name"></span>
+        </div>
+        <div class="profile-field">
+            <span class="profile-label">Email:</span>
+            <span id="email"></span>
+        </div>
+        <div class="profile-field">
+            <span class="profile-label">Location:</span>
+            <span id="location"></span>
+        </div>
+        <div class="profile-field">
+            <span class="profile-label">Films Watched:</span>
+            <span id="filmsWatched"></span>
+        </div>
+        <div class="profile-field">
+            <span class="profile-label">Favorites:</span>
+            <span id="favorites"></span>
+        </div>
+    </div>
+
+    <script>
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/user/profile');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+                const data = await response.json();
+                
+                document.getElementById('username').textContent = data.username || 'N/A';
+                document.getElementById('name').textContent = data.name || 'N/A';
+                document.getElementById('email').textContent = data.email || 'N/A';
+                document.getElementById('location').textContent = data.location || 'N/A';
+                
+                const filmsWatched = data.films_watched_list ? 
+                    JSON.stringify(data.films_watched_list) : 'None';
+                const favorites = data.favorites_list ? 
+                    JSON.stringify(data.favorites_list) : 'None';
+                
+                document.getElementById('filmsWatched').textContent = filmsWatched;
+                document.getElementById('favorites').textContent = favorites;
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                const errorMessage = document.createElement('p');
+                errorMessage.style.color = 'red';
+                errorMessage.textContent = 'Error loading profile data. Please try again later.';
+
+                const profileData = document.getElementById('profileData');
+                
+                while (profileData.firstChild) {
+                    profileData.removeChild(profileData.firstChild);
+                }
+                profileData.appendChild(errorMessage);
+            }
+        }
+
+        window.addEventListener('load', loadProfile);
+    </script>
+</body>
+</html>

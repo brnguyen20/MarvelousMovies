@@ -5,14 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Movie Catalog</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    #logoutButton {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    #logoutButton:hover {
+      background-color: #c82333;
+    }
+
+    #profileButton {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #profileButton:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h1>Movie Catalog</h1>
+  <div class="header-container">
+    <h1>Movie Catalog</h1>
+    <div class="header-buttons">
+      <button id="profileButton">My Profile</button>
+      <button id="logoutButton">Log Out</button>
+    </div>
+  </div>
   <div>
     <input type="text" id="searchInput" placeholder="Search for movies...">
     <button id="searchButton">Search</button>
   </div>
   <div id="movieGrid"></div>
   <script src="movies.js"></script>
+  <script>
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', {
+          method: 'POST',
+        });
+        
+        if (response.ok) {
+          window.location.href = '/index.html';
+        } else {
+          console.error('Logout failed');
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+
+    document.getElementById('profileButton').addEventListener('click', () => {
+      window.location.href = '/profile.html';
+    });
+  </script>
 </body>
 </html>

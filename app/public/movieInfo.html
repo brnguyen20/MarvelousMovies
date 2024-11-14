@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Information</title>
+  <link rel="stylesheet" href="thread.css">
+</head>
+<body>
+  <h1>Movie Information</h1>
+
+  <h2>Title:</h2>
+  <p id="movieTitle"></p>
+
+  <h2>Genre:</h2>
+  <p id="movieGenre"></p>
+
+  <h2>Details:</h2>
+  <p id="movieDetails"></p>
+
+  <h2>Cast:</h2>
+  <div id="movieCast"></div>
+
+  <h2>Images:</h2>
+  <div id="movieImages"></div>
+
+  <div id="topLevelComment">
+    <form id="commentForm">
+        <div class="comment-box">
+            <textarea id="commentText" name="commentText" placeholder="Add a comment"></textarea>
+            <button type="button" id="commentButton">Comment</button>
+        </div>
+    </form>
+  </div>
+
+  <div id="comments"></div>
+
+  <script src="movieInfo.js"></script>
+  <script src="thread.js"></script>
+</body>
+</html>
