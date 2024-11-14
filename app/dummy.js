@@ -87,14 +87,95 @@ const dummyMovieComments = [
       comments: [
         {
           user: "RobSimmons",
-          comment: "This movie was outstanding!",
+          type: "top-level",
+          text: "This movie was outstanding!",
           replies: [
             {
               user: "MovieBuff",
-              comment: "I think so too.",
+              type: "reply",
+              text: "I think so too.",
+              replies: [
+                {
+                  user: "RobSimmons",
+                  type: "reply",
+                  text: "Agreed, it was a masterpiece.",
+                  replies: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          user: "MovieBuff",
+          type: "top-level",
+          text: "Loved it from start to finish.",
+          replies: []
+        }
+      ]
+    }
+  },
+  {
+    movie_id: 238,
+    comment_thread: {
+      comments: [
+        {
+          user: "RobSimmons",
+          type: "top-level",
+          text: "A classic that never gets old.",
+          replies: [
+            {
+              user: "MovieBuff",
+              type: "reply",
+              text: "Absolutely, its timeless.",
               replies: []
             }
           ]
+        }
+      ]
+    }
+  },
+  {
+    movie_id: 533535,
+    comment_thread: {
+      comments: [
+        {
+          user: "RobSimmons",
+          type: "top-level",
+          text: "this is a deadpool and wolverine top-level comment",
+          replies: [
+            {
+              user: "MovieBuff",
+              type: "reply",
+              text: "this is a reply to a top-level comment",
+              replies: [
+                {
+                  user: "RobSimmons",
+                  type: "reply",
+                  text: "this is a reply to a reply",
+                  replies: [
+                    {
+                      user: "MovieBuff",
+                      type: "reply",
+                      text: "this is a reply to a reply to a reply",
+                      replies: []
+                    }
+                  ]
+                },
+                {
+                  user: "MovieBuff",
+                  type: "reply",
+                  text: "this is another reply to a reply",
+                  replies: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          user: "RobSimmons",
+          type: "top-level",
+          text: "this is another top-level comment",
+          replies: []
         }
       ]
     }
@@ -103,10 +184,21 @@ const dummyMovieComments = [
 
 pool.connect().then(async (client) => {
   try {
+    // Insert Users
     for (const userData of dummyUsers) {
+      const existingUser = await client.query(
+        `SELECT * FROM users WHERE email = $1`,
+        [userData.email]
+      );
+
+      if (existingUser.rows.length > 0) {
+        console.log(`User with email ${userData.email} already exists. Skipping insertion.`);
+        continue; // Skip this user if they already exist
+      }
+
       const hash = await argon2.hash(userData.password);
       await client.query(
-        `INSERT INTO Users (username, password, name, email, location, activity, 
+        `INSERT INTO users (username, password, name, email, location, activity, 
           social_media_links, reviews_list, favorites_list, follower_list, 
           following_list, films_watched_list, custom_lists) 
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
@@ -129,11 +221,13 @@ pool.connect().then(async (client) => {
       console.log(`Inserted user: ${userData.username}`);
     }
 
-    const userResult = await client.query("SELECT user_id, username FROM Users");
+    // Retrieve user IDs for mapping
+    const userResult = await client.query("SELECT user_id, username FROM users");
     const userMap = Object.fromEntries(
       userResult.rows.map(row => [row.username, row.user_id])
     );
 
+    // Insert Reviews
     for (const review of dummyReviews) {
       await client.query(
         `INSERT INTO review (user_id, movie_id, star_rating, content, likes)
@@ -143,6 +237,7 @@ pool.connect().then(async (client) => {
       console.log(`Inserted review for movie: ${review.movie_id}`);
     }
 
+    // Insert Movie Comments
     for (const commentData of dummyMovieComments) {
       await client.query(
         `INSERT INTO moviecomments (movie_id, comment_thread)
@@ -153,7 +248,7 @@ pool.connect().then(async (client) => {
     }
 
     console.log("\nInserted Users:");
-    const users = await client.query("SELECT * FROM Users");
+    const users = await client.query("SELECT * FROM users");
     console.log(users.rows);
 
     console.log("\nInserted Reviews:");

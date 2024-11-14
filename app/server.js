@@ -31,6 +31,7 @@ let authorize = (req, res, next) => {
 
 app.use('/movies.html', authorize);
 app.use('/profile.html', authorize);
+app.use('/movieInfo.html', authorize);
 app.get('/', (req, res) => {
     res.redirect('/index.html');
 });

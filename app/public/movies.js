@@ -26,27 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
         img.src = `${baseImageUrl}${movie.poster_path}`;
         img.className = "moviePoster";
         movieGrid.appendChild(img);
+        img.addEventListener("click", () => {
+          window.location.href = `/movieInfo.html?movieId=${movie.id}`;
+        });
       }
-    };
-
-    const displayMovies = (movies) => {
-      while (movieGrid.firstChild) {
-        movieGrid.removeChild(movieGrid.firstChild);
-      }
-
-      movies.forEach((movie) => {
-        if (movie.poster_path) {
-          const img = document.createElement('img');
-          img.src = `${baseImageUrl}${movie.poster_path}`;
-          img.className = 'moviePoster';
-          movieGrid.appendChild(img);
-          img.addEventListener("click", () => {
-            const moviePage = `http://localhost:3000/index.html?movieId=${movie.id}`;
-            window.open(moviePage, "_blank");
-          })
-        }
-      });
-    };
+    });
 
     searchButton.addEventListener('click', () => {
       const query = searchInput.value.trim();
