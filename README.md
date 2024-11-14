@@ -25,3 +25,14 @@ Database Procedure
 	postgres should be replaced with your username.
 3. It will promt you to enter your passwerd.
 4. After that it will automatically create the database, create the tables, and insert dummy data.
+
+Fly Setup
+1. Copy env.sample into a new file called .env
+2. In .env, replace YOURPOSTGRESUSER with postgres (your postgres username if postgres is not by default)
+3. In .env, replace YOURPOSTGRESPASSWORD with your postgres password
+4. In .env, replace YOURFLYWEBAPPNAME with marvelous-movies
+
+Fly Deployment
+1. To re-deploy Fly after making code changes, run .\fly.exe deploy  
+
+Link to Fly sample code: https://gitlab.cci.drexel.edu/nkl43/cs375_demos/-/tree/main/demo_fly_postgres?ref_type=heads

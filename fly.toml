@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for marvelousmovies on 2024-11-14T01:26:04Z
+# fly.toml app configuration file generated for marvelous-movies on 2024-11-13T21:57:23-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'marvelousmovies'
-primary_region = 'iad'
+app = 'marvelous-movies'
+primary_region = 'ewr'
 
 [build]
 
@@ -20,4 +20,3 @@ primary_region = 'iad'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 1024
