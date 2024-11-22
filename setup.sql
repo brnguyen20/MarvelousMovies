@@ -43,6 +43,14 @@ CREATE TABLE moviecomments(
     comment_thread JSON
 );
 
+CREATE TABLE friends (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    friend_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (friend_id) REFERENCES users(user_id)
+);
+
 -- Testing Purposes (Save for later)
 -- CREATE TABLE Replies (
 --     reply_id SERIAL PRIMARY KEY,

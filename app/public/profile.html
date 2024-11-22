@@ -36,6 +36,22 @@
         .back-button:hover {
             background-color: #0056b3;
         }
+        .comments-container {
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .comment-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+        .comment-type {
+            font-size: 0.8em;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -66,6 +82,14 @@
             <span class="profile-label">Favorites:</span>
             <span id="favorites"></span>
         </div>
+        <div class="profile-field">
+            <span class="profile-label">My Comments:</span>
+            <div id="userComments" class="comments-container"></div>
+        </div>
+        <div class="profile-field">
+            <span class="profile-label">My Friends:</span>
+            <div id="friendsList" class="friends-container"></div>
+        </div>
     </div>
 
     <script>
@@ -90,17 +114,67 @@
                 document.getElementById('filmsWatched').textContent = filmsWatched;
                 document.getElementById('favorites').textContent = favorites;
 
+                const commentsResponse = await fetch('/api/user/comments');
+                if (!commentsResponse.ok) {
+                    throw new Error('Failed to fetch comments');
+                }
+                const commentsData = await commentsResponse.json();
+                
+                const commentsContainer = document.getElementById('userComments');
+                while (commentsContainer.firstChild) {
+                    commentsContainer.removeChild(commentsContainer.firstChild);
+                }
+                
+                if (commentsData.length === 0) {
+                    commentsContainer.textContent = 'No comments yet';
+                } else {
+                    commentsData.forEach(comment => {
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment-item';
+                        
+                        const textDiv = document.createElement('div');
+                        textDiv.textContent = comment.text;
+                        commentDiv.appendChild(textDiv);
+
+                        const typeDiv = document.createElement('div');
+                        typeDiv.className = 'comment-type';
+                        typeDiv.textContent = `${comment.type} comment on Movie ID: ${comment.movieId}`;
+                        commentDiv.appendChild(typeDiv);
+
+                        commentsContainer.appendChild(commentDiv);
+                    });
+                }
+
+                const friendsResponse = await fetch('/api/user/friends');
+                if (!friendsResponse.ok) {
+                    throw new Error('Failed to fetch friends');
+                }
+                const friendsData = await friendsResponse.json();
+                
+                const friendsContainer = document.getElementById('friendsList');
+                while (friendsContainer.firstChild) {
+                    friendsContainer.removeChild(friendsContainer.firstChild);
+                }
+                
+                if (friendsData.length === 0) {
+                    friendsContainer.textContent = 'No friends yet';
+                } else {
+                    friendsData.forEach(friend => {
+                        const friendDiv = document.createElement('div');
+                        friendDiv.className = 'friend-item';
+                        friendDiv.textContent = friend.username;
+                        friendsContainer.appendChild(friendDiv);
+                    });
+                }
             } catch (error) {
                 console.error('Error loading profile:', error);
-                const errorMessage = document.createElement('p');
-                errorMessage.style.color = 'red';
-                errorMessage.textContent = 'Error loading profile data. Please try again later.';
-
                 const profileData = document.getElementById('profileData');
-                
                 while (profileData.firstChild) {
                     profileData.removeChild(profileData.firstChild);
                 }
+                const errorMessage = document.createElement('p');
+                errorMessage.style.color = 'red';
+                errorMessage.textContent = 'Error loading profile data. Please try again later.';
                 profileData.appendChild(errorMessage);
             }
         }
