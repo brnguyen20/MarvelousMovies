@@ -51,6 +51,7 @@
     <div class="header-buttons">
       <button id="profileButton">My Profile</button>
       <button id="logoutButton">Log Out</button>
+      <button id="usersButton">Users</button>
     </div>
   </div>
   <div>
@@ -78,6 +79,10 @@
 
     document.getElementById('profileButton').addEventListener('click', () => {
       window.location.href = '/profile.html';
+    });
+
+    document.getElementById('usersButton').addEventListener('click', () => {
+      window.location.href = '/users.html';
     });
   </script>
 </body>

@@ -342,13 +342,11 @@ app.get('/popular', async (req, res) => {
   }
 });
 
-// Add this helper function to get username from token
 function getCurrentUser(req) {
   const token = req.cookies.token;
   return tokenStorage[token];
 }
 
-// Get basic user profile information
 app.get('/api/user/profile', authorize, async (req, res) => {
   try {
     const username = getCurrentUser(req);
@@ -369,6 +367,122 @@ app.get('/api/user/profile', authorize, async (req, res) => {
     console.error('Error fetching user profile:', error);
     res.status(500).json({ error: "Failed to fetch user profile" });
   }
+});
+
+app.get('/api/user/comments', authorize, async (req, res) => {
+  try {
+    const username = getCurrentUser(req);
+    const result = await pool.query('SELECT movie_id, comment_thread FROM moviecomments');
+    
+    // not sure if this is the most efficient way to do this
+    const allComments = [];
+    result.rows.forEach(row => {
+      const thread = row.comment_thread;
+      
+      const findUserComments = (comments) => {
+        comments.forEach(comment => {
+          if (comment.user === username) {
+            allComments.push({
+              movieId: row.movie_id,
+              text: comment.text,
+              type: comment.type
+            });
+          }
+          if (comment.replies) {
+            findUserComments(comment.replies);
+          }
+        });
+      };
+
+      findUserComments(thread.comments);
+    });
+
+    res.json(allComments);
+  } catch (error) {
+    console.error('Error fetching user comments:', error);
+    res.status(500).json({ error: "Failed to fetch user comments" });
+  }
+});
+
+app.get('/api/users', authorize, async (req, res) => {
+    try {
+        const currentUser = getCurrentUser(req);
+        const result = await pool.query(
+            'SELECT user_id, username FROM users WHERE username != $1',
+            [currentUser]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
+});
+
+app.get('/api/user/friends', authorize, async (req, res) => {
+    try {
+        const username = getCurrentUser(req);
+        const userResult = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [username]
+        );
+        const userId = userResult.rows[0].user_id;
+
+        const friendsResult = await pool.query(
+            `SELECT f.friend_id, u.username 
+             FROM friends f 
+             JOIN users u ON f.friend_id = u.user_id 
+             WHERE f.user_id = $1`,
+            [userId]
+        );
+        res.json(friendsResult.rows);
+    } catch (error) {
+        console.error('Error fetching friends:', error);
+        res.status(500).json({ error: "Failed to fetch friends" });
+    }
+});
+
+app.post('/api/user/friends', authorize, async (req, res) => {
+    try {
+        const username = getCurrentUser(req);
+        const { friendId } = req.body;
+        
+        const userResult = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [username]
+        );
+        const userId = userResult.rows[0].user_id;
+
+        await pool.query(
+            'INSERT INTO friends (user_id, friend_id) VALUES ($1, $2)',
+            [userId, friendId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error adding friend:', error);
+        res.status(500).json({ error: "Failed to add friend" });
+    }
+});
+
+app.delete('/api/user/friends', authorize, async (req, res) => {
+    try {
+        const username = getCurrentUser(req);
+        const { friendId } = req.body;
+        
+        const userResult = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [username]
+        );
+        const userId = userResult.rows[0].user_id;
+
+        await pool.query(
+            'DELETE FROM friends WHERE user_id = $1 AND friend_id = $2',
+            [userId, friendId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error removing friend:', error);
+        res.status(500).json({ error: "Failed to remove friend" });
+    }
 });
 
 app.listen(port, hostname, () => {

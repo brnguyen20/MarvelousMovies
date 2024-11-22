@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .friend-button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .friend-button.friended {
+            background-color: #dc3545;
+            color: white;
+        }
+        .friend-button.not-friended {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.location.href='/movies.html'">Back to Movies</button>
+    <h1>Users</h1>
+    <div id="userList" class="user-list"></div>
+
+    <script>
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                const friendsResponse = await fetch('/api/user/friends');
+                const friends = await friendsResponse.json();
+                
+                const userList = document.getElementById('userList');
+                while (userList.firstChild) {
+                    userList.removeChild(userList.firstChild);
+                }
+                
+                users.forEach(user => {
+                    const div = document.createElement('div');
+                    div.className = 'user-item';
+                    
+                    let isFriend = false;
+                    for (const friend of friends) {
+                        if (friend.friend_id === user.user_id) {
+                            isFriend = true;
+                            break;
+                        }
+                    }
+                    
+                    const usernameSpan = document.createElement('span');
+                    usernameSpan.textContent = user.username;
+                    
+                    const button = document.createElement('button');
+                    button.onclick = () => toggleFriend(user.user_id);
+                    button.className = `friend-button ${isFriend ? 'friended' : 'not-friended'}`;
+                    button.id = `friend-${user.user_id}`;
+                    button.textContent = isFriend ? 'Unfriend' : 'Friend';
+                    
+                    div.appendChild(usernameSpan);
+                    div.appendChild(button);
+                    userList.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function toggleFriend(friendId) {
+            try {
+                const button = document.getElementById(`friend-${friendId}`);
+                const isFriended = button.classList.contains('friended');
+                
+                const response = await fetch('/api/user/friends', {
+                    method: isFriended ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ friendId })
+                });
+
+                if (response.ok) {
+                    button.classList.toggle('friended');
+                    button.classList.toggle('not-friended');
+                    button.textContent = isFriended ? 'Friend' : 'Unfriend';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html> 
