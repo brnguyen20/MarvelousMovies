@@ -4,38 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Movie Information</title>
+  <link rel="stylesheet" href="starReview.css">
   <link rel="stylesheet" href="thread.css">
 </head>
-<body>
-  <h1>Movie Information</h1>
+  <body>
+    <h1>Movie Information</h1>
 
-  <h2>Title:</h2>
-  <p id="movieTitle"></p>
+    <h2>Title:</h2>
+    <p id="movieTitle"></p>
 
-  <h2>Genre:</h2>
-  <p id="movieGenre"></p>
+    <h2>Genre:</h2>
+    <p id="movieGenre"></p>
 
-  <h2>Details:</h2>
-  <p id="movieDetails"></p>
+    <h2>Details:</h2>
+    <p id="movieDetails"></p>
 
-  <h2>Cast:</h2>
-  <div id="movieCast"></div>
+    <h2>Cast:</h2>
+    <div id="movieCast"></div>
 
-  <h2>Images:</h2>
-  <div id="movieImages"></div>
+    <h2>Images:</h2>
+    <div id="movieImages"></div>
 
-  <div id="topLevelComment">
-    <form id="commentForm">
-        <div class="comment-box">
-            <textarea id="commentText" name="commentText" placeholder="Add a comment"></textarea>
-            <button type="button" id="commentButton">Comment</button>
+    <h2>Ratings:</h2>
+    <div id="ratingSection">
+        <div id="star-container">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
         </div>
-    </form>
-  </div>
+        <div id="ratingCommentBox">
+            <textarea id="ratingDescription" name="ratingDescription" placeholder="Add a description (optional)"></textarea>
+            <button type="button" id="ratingPostButton">Post Rating</button>
+        </div>
+    </div>
+    <div id="ratingsContainer"></div>
 
-  <div id="comments"></div>
+    <h2>Comment Thread:</h2>
+    <div id="topLevelComment">
+      <form id="commentForm">
+          <div class="comment-box">
+              <textarea id="commentText" name="commentText" placeholder="Add a comment"></textarea>
+              <button type="button" id="commentButton">Comment</button>
+          </div>
+      </form>
+    </div>
+    <div id="comments"></div>
 
-  <script src="movieInfo.js"></script>
-  <script src="thread.js"></script>
-</body>
+    <script src="movieInfo.js"></script>
+    <script src="starReview.js"></script>
+    <script src="thread.js"></script>
+  </body>
 </html>

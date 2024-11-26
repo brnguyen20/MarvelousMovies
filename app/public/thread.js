@@ -51,9 +51,24 @@ function loadCommentFromData(data, parent = null) {
         data.replies.forEach(replyData => loadCommentFromData(replyData, comment));
 }
 
+async function getUserProfile() {
+    try {
+        const response = await fetch('/api/user/profile');
+        if (!response.ok) {
+            throw new Error('Failed to fetch user profile');
+        }
+        const data = await response.json();
+        return data.username || 'Unknown';
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return 'Unknown';
+    }
+}
+
 //Creates, renders, and saves comments that users post
-function postUserComment(commentType, commentText, parent = null) {
-    const comment = new Comment(commentType, commentText);
+async function postUserComment(commentType, commentText, parent = null) {
+    const user = await getUserProfile();
+    const comment = new Comment(commentType, commentText, user);
 
     // reply
     if (parent) {
@@ -75,12 +90,12 @@ function renderComment(comment, parentDiv) {
     comment.div = commentDiv;
 
     const commentContent = document.createElement('p');
-    commentContent.textContent = comment.text;
+    commentContent.innerHTML = `<strong>${comment.user}:</strong> ${comment.text}`;
 
     const replyButton = document.createElement('button');
     replyButton.textContent = 'Reply';
     replyButton.addEventListener('click', () => {
-        if (!commentDiv.querySelector('.replyFormOpen')) // So the user can't spam reply
+        if (!commentDiv.querySelector('.replyFormOpen')) // so user can't spam reply
             createReplyForm(commentDiv, comment);
     });
 
@@ -90,6 +105,7 @@ function renderComment(comment, parentDiv) {
 
     comment.replies.forEach(reply => renderComment(reply, commentDiv));
 }
+
 
 function renderAllComments() {
     let commentsContainer = document.getElementById('comments');

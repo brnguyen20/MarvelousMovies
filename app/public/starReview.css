@@ -1,0 +1,106 @@
+#star-container {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+
+.star-visualization {
+  display: flex;
+  margin-top: 5px;
+}
+
+
+.star {
+  font-size: 24px;
+  cursor: pointer;
+  color: #ccc;  
+}
+
+
+.star.filled {
+  color: #ffcc00;  
+}
+
+
+.rating {
+  padding: 10px;
+  background-color: #fff; 
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+
+.star.hovered {
+  color: #ffcc00;
+}
+
+#ratingCommentBox {
+  display: flex;
+  flex-direction: row;  
+  align-items: flex-start; 
+  margin-top: 10px;
+  width: 100%;
+}
+
+#ratingCommentBox textarea {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  width: 100%;  
+  resize: vertical; 
+  border: 1px solid #ddd;  
+  border-radius: 5px;  
+  background-color: #f9f9f9;  
+}
+
+#ratingPostButton {
+  padding: 6px 12px; 
+  font-size: 14px;  
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+  margin-left: 10px;    
+  width: auto;        
+  display: inline-block;
+  align-self: flex-start; 
+}
+
+#ratingPostButton:hover {
+  background-color: #0056b3;
+}
+
+#ratingDescription {
+  flex: 1;  
+  max-width: 600px;  
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  resize: none;
+}
+
+#ratingPostButton:hover {
+  background-color: #0056b3;
+}
+
+.rating {
+  padding: 10px;
+  background-color: #ffffff;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-family: Arial, sans-serif;
+}
+
+.rating p {
+  font-size: 14px;
+}
+
+#ratingSection #ratingDisplay {
+  margin-bottom: 20px;
+}

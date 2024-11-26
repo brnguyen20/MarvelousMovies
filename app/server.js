@@ -485,6 +485,38 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
     }
 });
 
+app.post('/save-rating', authorize, async (req, res) => {
+  const { user_id, movie_id, star_rating, content } = req.body;
+
+  if (!user_id || !movie_id || !star_rating) {
+    return res.status(400).json({ error: 'User ID, Movie ID, and Star Rating are required' });
+  }
+
+  try {
+    const existingRating = await pool.query(
+      'SELECT * FROM review WHERE user_id = $1 AND movie_id = $2', 
+      [user_id, movie_id]
+    );
+
+    if (existingRating.rows.length > 0) {
+      await pool.query(
+        'UPDATE review SET star_rating = $1, content = $2 WHERE user_id = $3 AND movie_id = $4', 
+        [star_rating, content, user_id, movie_id]
+      );
+      res.status(200).json({ message: 'Rating updated successfully!' });
+    } else {
+      await pool.query(
+        'INSERT INTO review (user_id, movie_id, star_rating, content) VALUES ($1, $2, $3, $4)', 
+        [user_id, movie_id, star_rating, content]
+      );
+      res.status(200).json({ message: 'Rating posted successfully!' });
+    }
+  } catch (error) {
+    console.error('Error saving rating:', error);
+    res.status(500).json({ error: 'Failed to save rating' });
+  }
+});
+
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
