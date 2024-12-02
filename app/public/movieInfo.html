@@ -6,54 +6,59 @@
   <title>Movie Information</title>
   <link rel="stylesheet" href="starReview.css">
   <link rel="stylesheet" href="thread.css">
+  <link rel="stylesheet" href="movieInfo.css">
 </head>
-  <body>
-    <h1>Movie Information</h1>
+<body>
+  <a href="movies.html" id="moviesButton">View All Movies</a>
 
-    <h2>Title:</h2>
-    <p id="movieTitle"></p>
+  <h1 id="movieTitle">Movie Title</h1>
+  <div id="movieImages"></div>
 
+  <div id="movieDetailsBox">
+    <p id="movieDetails"></p>
+  </div>
+  
+  <div id="movieGenreBox">
     <h2>Genre:</h2>
     <p id="movieGenre"></p>
-
-    <h2>Details:</h2>
-    <p id="movieDetails"></p>
-
+  </div>
+  
+  <div id="movieCastBox">
     <h2>Cast:</h2>
-    <div id="movieCast"></div>
-
-    <h2>Images:</h2>
-    <div id="movieImages"></div>
-
-    <h2>Ratings:</h2>
-    <div id="ratingSection">
-        <div id="star-container">
-            <span class="star" data-value="1">&#9733;</span>
-            <span class="star" data-value="2">&#9733;</span>
-            <span class="star" data-value="3">&#9733;</span>
-            <span class="star" data-value="4">&#9733;</span>
-            <span class="star" data-value="5">&#9733;</span>
-        </div>
-        <div id="ratingCommentBox">
-            <textarea id="ratingDescription" name="ratingDescription" placeholder="Add a description (optional)"></textarea>
-            <button type="button" id="ratingPostButton">Post Rating</button>
-        </div>
+    <div id="movieCast">
+      <!-- Cast members will be dynamically added here -->
     </div>
-    <div id="ratingsContainer"></div>
+  </div>
 
-    <h2>Comment Thread:</h2>
-    <div id="topLevelComment">
-      <form id="commentForm">
-          <div class="comment-box">
-              <textarea id="commentText" name="commentText" placeholder="Add a comment"></textarea>
-              <button type="button" id="commentButton">Comment</button>
-          </div>
-      </form>
+  <h2 class="center-text">Ratings:</h2>
+  <div id="ratingSection">
+    <div id="star-container">
+      <span class="star" data-value="1">&#9733;</span>
+      <span class="star" data-value="2">&#9733;</span>
+      <span class="star" data-value="3">&#9733;</span>
+      <span class="star" data-value="4">&#9733;</span>
+      <span class="star" data-value="5">&#9733;</span>
     </div>
-    <div id="comments"></div>
+    <div id="ratingCommentBox">
+      <textarea id="ratingDescription" name="ratingDescription" placeholder="Add a description (optional)"></textarea>
+      <button type="button" id="ratingPostButton">Post Rating</button>
+    </div>
+  </div>
+  <div id="ratingsContainer"></div>
 
-    <script src="movieInfo.js"></script>
-    <script src="starReview.js"></script>
-    <script src="thread.js"></script>
-  </body>
+  <h2 class="center-text">Comment Thread:</h2>
+  <div id="topLevelComment">
+    <form id="commentForm">
+      <div class="comment-box">
+        <textarea id="commentText" name="commentText" placeholder="Add a comment"></textarea>
+        <button type="button" id="commentButton">Comment</button>
+      </div>
+    </form>
+  </div>
+  <div id="comments"></div>
+
+  <script src="movieInfo.js"></script>
+  <script src="starReview.js"></script>
+  <script src="thread.js"></script>
+</body>
 </html>

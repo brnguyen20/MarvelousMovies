@@ -103,14 +103,22 @@ function saveRating(ratingData) {
     });
 }
 
-
 function renderRating(rating) {
     const ratingDiv = document.createElement('div');
     ratingDiv.classList.add('rating');
-
+    
+    // Apply dark theme styles to rating div
+    ratingDiv.style.backgroundColor = '#2a2a2a'; // Dark background
+    ratingDiv.style.color = '#e0e0e0'; // Light text color
+    ratingDiv.style.border = '1px solid #444'; // Dark border
+    ratingDiv.style.borderRadius = '10px'; // Rounded corners
+    ratingDiv.style.padding = '20px'; // Padding inside the rating div
+    ratingDiv.style.marginBottom = '10px'; // Space between ratings
+    ratingDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)'; // Subtle shadow
 
     const ratingContent = document.createElement('p');
     ratingContent.innerHTML = `<strong>${rating.user}:</strong>`;  
+    ratingContent.style.color = '#fff'; // White color for user name
 
     const starContainer = document.createElement('div');
     starContainer.classList.add('star-visualization');
@@ -120,18 +128,20 @@ function renderRating(rating) {
         star.classList.add('star'); 
 
         if (i < rating.rating) {
-            star.innerHTML = '&#9733;';
+            star.innerHTML = '&#9733;'; // Filled star
             star.classList.add('filled'); 
+            star.style.color = '#FFD700'; // Golden color for filled stars
         } else {
-            star.innerHTML = '&#9734;'; 
+            star.innerHTML = '&#9734;'; // Empty star
+            star.style.color = '#555'; // Dark color for empty stars
         }
 
         starContainer.appendChild(star); 
     }
 
-
     const descriptionContent = document.createElement('p');
     descriptionContent.innerHTML = rating.description ? `${rating.description}` : 'No description provided';  // Corrected template literal
+    descriptionContent.style.color = '#ccc'; // Light gray text color for description
 
     ratingDiv.appendChild(ratingContent);
     ratingDiv.appendChild(starContainer);
