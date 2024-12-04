@@ -83,8 +83,8 @@ app.post("/create", async (req, res) => {
         location, 
         films_watched_list, 
         favorites_list
-      ) VALUES ($1, $2, $1, $1 || '@example.com', 'Not Set', '[]'::json, '[]'::json)`, 
-      [username, hash]
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
+      [username, hash, username, `${username}@example.com`, 'Not Set', '[]', '[]']
     );
   } catch (error) {
     console.error("INSERT FAILED", error);

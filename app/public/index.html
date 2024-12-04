@@ -19,8 +19,8 @@
         margin-bottom: 30px;
       }
       .logo {
-        width: 250px; 
-        margin-bottom: 20px; 
+        width: 250px;
+        margin-bottom: 20px;
       }
       .login-form {
         display: flex;
@@ -74,7 +74,7 @@
     </style>
   </head>
   <body>
-    <img src="logo.png" alt="Marvelous Movies Logo" class="logo">
+    <img src="logo.png" alt="Marvelous Movies Logo" class="logo" />
     <h1>Welcome to Marvelous Movies</h1>
     <div class="login-form">
       <input type="text" id="username" placeholder="Username" />
@@ -83,7 +83,7 @@
       <div id="error-message" class="error-message">
         Invalid username or password
       </div>
-      <a href="/register.html">Create an Account</a>
+      <p>Don't have an account? <a href="/create_account.html">Create one</a></p>
     </div>
 
     <script>
@@ -91,30 +91,30 @@
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
         const errorMessage = document.getElementById("error-message");
-        
+
         try {
-          const response = await fetch('/login', {
-            method: 'POST',
+          const response = await fetch("/login", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
           });
 
           if (response.ok) {
-            window.location.href = '/movies.html';
+            window.location.href = "/movies.html";
           } else {
-            errorMessage.style.display = 'block';
-            document.getElementById("password").value = ''; 
+            errorMessage.style.display = "block";
+            document.getElementById("password").value = "";
           }
         } catch (error) {
-          console.error('Login error:', error);
-          errorMessage.style.display = 'block';
+          console.error("Login error:", error);
+          errorMessage.style.display = "block";
         }
       }
 
-      document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+      document.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
           login();
         }
       });
