@@ -463,68 +463,6 @@ app.post('/api/user/friends', authorize, async (req, res) => {
     }
 });
 
-//Movie Recommendations API Endpoint------------------------------------------------
-app.post('/api/user/recommendations', authorize, async (req, res) => {
-  console.log("Added movie to recommendation list");
-  try {
-      const username = getCurrentUser(req); // Identify the current user
-      const { movieId } = req.body; // Expect the movie ID in the request body
-
-      if (!movieId) {
-          return res.status(400).json({ error: "Movie ID is required" });
-      }
-
-      // Retrieve user information
-      const userResult = await pool.query(
-          'SELECT user_id, recommendations FROM users WHERE username = $1',
-          [username]
-      );
-
-      if (userResult.rows.length === 0) {
-          return res.status(404).json({ error: "User not found" });
-      }
-
-      const userId = userResult.rows[0].user_id;
-      let movieList = userResult.rows[0].recommendations || [];
-
-      // Avoid adding duplicates
-      if (movieList.some(movie => movie.id === movieId)) {
-          return res.status(400).json({ error: "Movie already in recommendations list" });
-      }
-
-      // Fetch movie details for context
-      const movieDetails = await axios.get(
-          `https://api.themoviedb.org/3/movie/${movieId}`,
-          {
-              headers: {
-                  Authorization: apiKey,
-                  Accept: 'application/json'
-              }
-          }
-      );
-
-      const newMovie = {
-          id: movieId,
-          title: movieDetails.data.title,
-          poster: movieDetails.data.poster_path,
-          release_date: movieDetails.data.release_date
-      };
-
-      // Update recommendations list
-      movieList.push(newMovie);
-
-      await pool.query(
-          'UPDATE users SET recommendations = $1 WHERE user_id = $2',
-          [JSON.stringify(movieList), userId]
-      );
-
-      res.status(200).json({ success: true, recommendations: movieList });
-  } catch (error) {
-      console.error('Error updating recommendations:', error);
-      res.status(500).json({ error: "Failed to update recommendations" });
-  }
-});
-
 app.delete('/api/user/friends', authorize, async (req, res) => {
     try {
         const username = getCurrentUser(req);
