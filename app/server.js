@@ -426,7 +426,7 @@ app.get('/api/user/friends', authorize, async (req, res) => {
             [username]
         );
         const userId = userResult.rows[0].user_id;
-        
+
         const friendsResult = await pool.query(
             `SELECT f.friend_id, u.username 
              FROM friends f 
@@ -488,29 +488,32 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
 app.get('/api/user/recommendations', authorize, async (req, res) => {
   try {
       const username = getCurrentUser(req);
-      const userResult = await pool.query(
+
+      // Get the user's ID from the username
+      const result = await pool.query(
           'SELECT user_id FROM users WHERE username = $1',
           [username]
       );
-      const userId = userResult.rows[0].user_id;
+      const userId = result.rows[0].user_id;
 
-      const recommendationResult = await pool.query(
-          `SELECT r.movie_list 
-           FROM recommendations r
-           WHERE r.user_id = $1`,
+      // Fetch the movie_list for this user
+      const recommendationsResult = await pool.query(
+          'SELECT movie_list FROM recommendations WHERE user_id = $1',
           [userId]
       );
-      console.log("Recommendation result.rows:", JSON.stringify(recommendationResult.rows, null, 2));
-      const movies = recommendationResult.rows.map(row => row.movie_list);
-      res.json(movies);
-      console.log("movies:" + movies);
-      //res.json(recommendationResult.rows);
+
+      if (recommendationsResult.rows.length === 0) {
+          // No recommendations for the user
+          return res.json([]);
+      }
+
+      const movieList = recommendationsResult.rows[0].movie_list;
+      res.json(movieList || []);
   } catch (error) {
       console.error('Error fetching recommendations:', error);
-      res.status(500).json({ error: "Failed to fetch recommendations" });
+      res.status(500).json({ error: 'Failed to fetch recommendations' });
   }
 });
-
 
 app.post('/add-to-recommendations', authorize, async (req, res) => {
   const { movieID } = req.body;

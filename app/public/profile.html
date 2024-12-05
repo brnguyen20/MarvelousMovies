@@ -195,8 +195,9 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch recommendations');
                 }
+                console.log(response);
                 const recommendations = await response.json();
-
+                console.log(recommendations);
                 const recommendationsContainer = document.getElementById('myMovieRecommendations');
                 // Clear the existing content
                 while (recommendationsContainer.firstChild) {
@@ -207,10 +208,9 @@
                     recommendationsContainer.textContent = 'No recommendations yet.';
                 } else {
                     // Flatten the list of movie IDs from the recommendations response
-                    const movieIds = recommendations.flatMap(row => row.movie_list);
-
+                    //const movieIds = recommendations.flatMap(row => row.movie_list);
                     // Populate the container with the movie IDs
-                    movieIds.forEach(movieId => {
+                    recommendations.forEach(movieId => {
                         const movieDiv = document.createElement('div');
                         movieDiv.className = 'recommendation-item';
                         movieDiv.textContent = `Movie ID: ${movieId}`;
