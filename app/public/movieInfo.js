@@ -1,8 +1,6 @@
-const submitButton = document.getElementById("submitButton");
-
 document.addEventListener("DOMContentLoaded", () => {
-  params = new URLSearchParams(window.location.search);
-
+  console.log("movieinfo log");
+  const params = new URLSearchParams(window.location.search);
   const movieID = params.get('movieId'); 
 
   fetch(`/genre?movieID=${movieID}`)
@@ -17,8 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(response => response.json())
     .then(data => {
       const detailsElement = document.getElementById("movieDetails");
-      const titleElement = document.getElementById("movieTitle")
-      titleElement.textContent = data.original_title
+      const titleElement = document.getElementById("movieTitle");
+      titleElement.textContent = data.original_title;
       detailsElement.textContent = JSON.stringify(data);
     })
     .catch(error => console.error("Error fetching details:", error));
@@ -77,4 +75,28 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(error => console.error("Error fetching images:", error));
-})
+
+  // Handle adding the movie to recommendations
+  const addToRecommendationsButton = document.getElementById("addToRecommendations");
+  addToRecommendationsButton.addEventListener("click", () => {
+    fetch("/add-to-recommendations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ movieID: movieID }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Movie added to your recommendations list!");
+      } else {
+        alert("Error adding movie to recommendations list.");
+      }
+    })
+    .catch(error => {
+      console.error("Error adding movie to recommendations:", error);
+      alert("An error occurred.");
+    });
+  });
+});

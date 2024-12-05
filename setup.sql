@@ -72,4 +72,4 @@ CREATE TABLE recommendations(
 
 -- SELECT * FROM users;
 -- SELECT * FROM review;
-SELECT * FROM moviecomments;
+--SELECT * FROM moviecomments;
