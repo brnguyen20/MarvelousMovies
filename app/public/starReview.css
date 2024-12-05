@@ -1,43 +1,46 @@
+/* Rating Container */
 #star-container {
   display: flex;
   margin-bottom: 10px;
 }
 
-
+/* Rating visualization */
 .star-visualization {
   display: flex;
   margin-top: 5px;
 }
 
-
+/* Star styles */
 .star {
   font-size: 24px;
   cursor: pointer;
-  color: #ccc;  
+  color: #ccc;
 }
-
 
 .star.filled {
-  color: #ffcc00;  
+  color: #ffcc00;
 }
-
-
-.rating {
-  padding: 10px;
-  background-color: #fff; 
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
 
 .star.hovered {
   color: #ffcc00;
 }
 
+/* Rating Box */
+.rating {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 100%;  /* Ensure it stretches to fit the available space */
+  max-width: 900px;  /* Set a max width to limit it */
+  margin: 0 auto;  /* Center the rating box */
+}
+
+/* Comment Box */
 #ratingCommentBox {
   display: flex;
-  flex-direction: row;  
-  align-items: flex-start; 
+  flex-direction: row;
+  align-items: flex-start;
   margin-top: 10px;
   width: 100%;
 }
@@ -46,16 +49,17 @@
   padding: 10px;
   font-size: 16px;
   margin-bottom: 10px;
-  width: 100%;  
-  resize: vertical; 
-  border: 1px solid #ddd;  
-  border-radius: 5px;  
-  background-color: #f9f9f9;  
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
 }
 
+/* Rating Post Button */
 #ratingPostButton {
-  padding: 6px 12px; 
-  font-size: 14px;  
+  padding: 6px 12px;
+  font-size: 14px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -63,19 +67,20 @@
   border-radius: 5px;
   font-weight: bold;
   text-align: center;
-  margin-left: 10px;    
-  width: auto;        
+  margin-left: 10px;
+  width: auto;
   display: inline-block;
-  align-self: flex-start; 
+  align-self: flex-start;
 }
 
 #ratingPostButton:hover {
   background-color: #0056b3;
 }
 
+/* Rating Description */
 #ratingDescription {
-  flex: 1;  
-  max-width: 600px;  
+  flex: 1;
+  max-width: 600px;
   padding: 10px;
   font-size: 16px;
   border-radius: 5px;
@@ -84,23 +89,38 @@
   resize: none;
 }
 
-#ratingPostButton:hover {
-  background-color: #0056b3;
-}
-
-.rating {
-  padding: 10px;
-  background-color: #ffffff;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-family: Arial, sans-serif;
-}
-
-.rating p {
-  font-size: 14px;
-}
-
+/* Ratings Section */
 #ratingSection #ratingDisplay {
   margin-bottom: 20px;
 }
+
+/* Posted Reviews Section */
+#postedReviews {
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 100%;
+  max-width: 600px;  /* Same as the rating box */
+  margin: 0 auto;  /* Center the posted reviews section */
+  margin-top: 20px;  /* Space above posted reviews */
+}
+
+#postedReviews .review {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+#postedReviews .review .review-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#postedReviews .review .review-author {
+  font-size: 12px;
+  font-style: italic;
+  color: #555;
+}
+

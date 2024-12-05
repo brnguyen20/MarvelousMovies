@@ -485,7 +485,7 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
     }
 });
 
-app.post('/save-rating', authorize, async (req, res) => {
+app.post('/api/rating', authorize, async (req, res) => {
   const { user_id, movie_id, star_rating, content } = req.body;
 
   if (!user_id || !movie_id || !star_rating) {
@@ -516,6 +516,30 @@ app.post('/save-rating', authorize, async (req, res) => {
     res.status(500).json({ error: 'Failed to save rating' });
   }
 });
+
+app.get('/api/ratings', authorize, async (req, res) => {
+  const { movie_id } = req.query;
+
+  if (!movie_id) {
+    return res.status(400).json({ error: 'Movie ID is required' });
+  }
+
+  try {
+    const ratings = await pool.query(
+      `SELECT r.user_id, r.star_rating, r.content, u.username, r.likes
+       FROM review r 
+       JOIN users u ON r.user_id = u.user_id 
+       WHERE r.movie_id = $1`,
+      [movie_id]
+    );
+
+    res.status(200).json(ratings.rows);
+  } catch (error) {
+    console.error('Error fetching ratings:', error);
+    res.status(500).json({ error: 'Failed to fetch ratings' });
+  }
+});
+
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
