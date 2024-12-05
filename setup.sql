@@ -54,8 +54,8 @@ CREATE TABLE friends (
 CREATE TABLE recommendations(
     id SERIAL PRIMARY KEY,
     user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    movie_list JSON
+    movie_list JSON,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 )
 
 -- Testing Purposes (Save for later)
@@ -68,8 +68,8 @@ CREATE TABLE recommendations(
 --     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
 -- );
 
-
+--SELECT * FROM recommendations;
 
 -- SELECT * FROM users;
 -- SELECT * FROM review;
---SELECT * FROM moviecomments;
+SELECT * FROM moviecomments;

@@ -547,9 +547,6 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
     }
 });
 
-app.listen(port, hostname, () => {
-    console.log(`http://${hostname}:${port}`);
-});
 
 app.post('/add-to-recommendations', authorize, async (req, res) => {
   const { movieID } = req.body;
@@ -558,20 +555,20 @@ app.post('/add-to-recommendations', authorize, async (req, res) => {
     return res.status(400).json({ error: "Movie ID is required" });
   }
 
-  const username = getCurrentUser(req);
+  const userId = getCurrentUser(req); // Assuming this function now returns user_id, not username
 
   try {
-    // Fetch the user's current recommendations list
+    // Fetch the user's current recommendations list using user_id
     const result = await pool.query(
-      'SELECT movie_list FROM recommendations WHERE username = $1',
-      [username]
+      'SELECT movie_list FROM recommendations WHERE user_id = $1',
+      [userId]
     );
 
     if (result.rows.length === 0) {
       // If no recommendations list exists for the user, create one
       await pool.query(
-        'INSERT INTO recommendations (username, movie_list) VALUES ($1, $2)',
-        [username, JSON.stringify([movieID])]
+        'INSERT INTO recommendations (user_id, movie_list) VALUES ($1, $2)',
+        [userId, JSON.stringify([movieID])]
       );
     } else {
       // If the list exists, add the movie to the list
@@ -579,8 +576,8 @@ app.post('/add-to-recommendations', authorize, async (req, res) => {
       if (!movieList.includes(movieID)) {
         movieList.push(movieID); // Add the movie if it's not already in the list
         await pool.query(
-          'UPDATE recommendations SET movie_list = $1 WHERE username = $2',
-          [JSON.stringify(movieList), username]
+          'UPDATE recommendations SET movie_list = $1 WHERE user_id = $2',
+          [JSON.stringify(movieList), userId]
         );
       }
     }
@@ -592,3 +589,6 @@ app.post('/add-to-recommendations', authorize, async (req, res) => {
   }
 });
 
+app.listen(port, hostname, () => {
+    console.log(`http://${hostname}:${port}`);
+});
