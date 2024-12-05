@@ -585,6 +585,7 @@ app.post('/add-to-recommendations', authorize, async (req, res) => {
       const movieList = result.rows[0].movie_list;
       if (!movieList.includes(movieID)) {
         movieList.push(movieID); // Add the movie if it's not already in the list
+        console.log("movieList:" + movieList);
         await pool.query(
           'UPDATE recommendations SET movie_list = $1 WHERE user_id = $2',
           [JSON.stringify(movieList), userId]
