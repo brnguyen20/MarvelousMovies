@@ -36,17 +36,19 @@
         .back-button:hover {
             background-color: #0056b3;
         }
-        .comments-container {
+        .comments-container, .friends-container, .my-recommendations-container, .friend-recommendations-container {
             margin-top: 10px;
             max-height: 300px;
             overflow-y: auto;
         }
-        .comment-item {
+        .comment-item, .recommendation-item {
             background: white;
             padding: 10px;
             margin: 5px 0;
             border-radius: 4px;
-            border-left: 3px solid #007bff;
+        }
+        .recommendation-item {
+            border-left: 3px solid #28a745;
         }
         .comment-type {
             font-size: 0.8em;
@@ -187,7 +189,46 @@
             }
         }
 
-        window.addEventListener('load', loadProfile);
+        async function loadRecommendations() {
+            try {
+                const response = await fetch('/api/user/recommendations');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch recommendations');
+                }
+                const recommendations = await response.json();
+
+                const recommendationsContainer = document.getElementById('myMovieRecommendations');
+                // Clear the existing content
+                while (recommendationsContainer.firstChild) {
+                    recommendationsContainer.removeChild(recommendationsContainer.firstChild);
+                }
+
+                if (!recommendations || recommendations.length === 0) {
+                    recommendationsContainer.textContent = 'No recommendations yet.';
+                } else {
+                    // Flatten the list of movie IDs from the recommendations response
+                    const movieIds = recommendations.flatMap(row => row.movie_list);
+
+                    // Populate the container with the movie IDs
+                    movieIds.forEach(movieId => {
+                        const movieDiv = document.createElement('div');
+                        movieDiv.className = 'recommendation-item';
+                        movieDiv.textContent = `Movie ID: ${movieId}`;
+                        recommendationsContainer.appendChild(movieDiv);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading recommendations:', error);
+                const recommendationsContainer = document.getElementById('myMovieRecommendations');
+                recommendationsContainer.textContent = 'Error loading recommendations.';
+            }
+        }
+
+
+        window.addEventListener('load', () => {
+            loadProfile();
+            loadRecommendations();
+        });
     </script>
 </body>
 </html>

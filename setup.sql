@@ -70,6 +70,9 @@ CREATE TABLE recommendations(
 
 --SELECT * FROM recommendations;
 
--- SELECT * FROM users;
+SELECT * FROM users;
 -- SELECT * FROM review;
 -- SELECT * FROM moviecomments;
+
+--SELECT f.friend_id, u.username FROM friends f JOIN users u ON f.friend_id = u.user_id WHERE f.user_id = $1;
+--SELECT movie_list FROM recommendations r JOIN users u ON r.user_id = u.user_id WHERE r.user_id = $1;

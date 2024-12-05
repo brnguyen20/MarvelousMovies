@@ -426,7 +426,7 @@ app.get('/api/user/friends', authorize, async (req, res) => {
             [username]
         );
         const userId = userResult.rows[0].user_id;
-
+        
         const friendsResult = await pool.query(
             `SELECT f.friend_id, u.username 
              FROM friends f 
@@ -483,6 +483,32 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
         console.error('Error removing friend:', error);
         res.status(500).json({ error: "Failed to remove friend" });
     }
+});
+
+app.get('/api/user/recommendations', authorize, async (req, res) => {
+  try {
+      const username = getCurrentUser(req);
+      const userResult = await pool.query(
+          'SELECT user_id FROM users WHERE username = $1',
+          [username]
+      );
+      const userId = userResult.rows[0].user_id;
+
+      const recommendationResult = await pool.query(
+          `SELECT r.movie_list 
+           FROM recommendations r
+           WHERE r.user_id = $1`,
+          [userId]
+      );
+      console.log("Recommendation result.rows:", JSON.stringify(recommendationResult.rows, null, 2));
+      const movies = recommendationResult.rows.map(row => row.movie_list);
+      res.json(movies);
+      console.log("movies:" + movies);
+      //res.json(recommendationResult.rows);
+  } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      res.status(500).json({ error: "Failed to fetch recommendations" });
+  }
 });
 
 
