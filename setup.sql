@@ -56,7 +56,7 @@ CREATE TABLE recommendations(
     user_id INT,
     movie_list JSON,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
-)
+);
 
 -- Testing Purposes (Save for later)
 -- CREATE TABLE Replies (
@@ -72,4 +72,4 @@ CREATE TABLE recommendations(
 
 -- SELECT * FROM users;
 -- SELECT * FROM review;
-SELECT * FROM moviecomments;
+-- SELECT * FROM moviecomments;

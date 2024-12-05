@@ -555,15 +555,25 @@ app.post('/add-to-recommendations', authorize, async (req, res) => {
     return res.status(400).json({ error: "Movie ID is required" });
   }
 
-  const userId = getCurrentUser(req); // Assuming this function now returns user_id, not username
-
+  const username = getCurrentUser(req); // Assuming this function now returns user_id, not username
+  let userId = -1;
+  try {
+    console.log("fetching userId");
+    const result = await pool.query(
+      'SELECT user_id FROM users WHERE username = $1',
+      [username]
+    );
+    userId = result["rows"][0]["user_id"];
+  } catch(error) {
+    console.log(error);
+  }
   try {
     // Fetch the user's current recommendations list using user_id
     const result = await pool.query(
       'SELECT movie_list FROM recommendations WHERE user_id = $1',
       [userId]
     );
-
+    console.log(userId);
     if (result.rows.length === 0) {
       // If no recommendations list exists for the user, create one
       await pool.query(
