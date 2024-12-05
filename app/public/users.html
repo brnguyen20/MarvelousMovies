@@ -7,9 +7,51 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            margin: 0;
             padding: 20px;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #1e1e1e; /* Darker header background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+        }
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #logoutButton {
+            background-color: #dc3545; /* Red */
+            color: white;
+        }
+        #logoutButton:hover {
+            background-color: #c82333;
+        }
+        #profileButton {
+            background-color: #007bff; /* Blue */
+            color: white;
+        }
+        #profileButton:hover {
+            background-color: #0056b3;
+        }
+        #usersButton {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
+        #usersButton:hover {
+            background-color: #218838;
         }
         .user-list {
             margin-top: 20px;
@@ -19,25 +61,37 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #444; /* Darker border */
+            background-color: #1e1e1e; /* Dark background for items */
+            border-radius: 5px;
         }
         .friend-button {
             padding: 5px 10px;
             cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
         .friend-button.friended {
-            background-color: #dc3545;
+            background-color: #dc3545; /* Red */
             color: white;
         }
         .friend-button.not-friended {
-            background-color: #28a745;
+            background-color: #28a745; /* Green */
             color: white;
         }
     </style>
 </head>
 <body>
+    <div class="header-container">
+        <h1>Users</h1>
+        <div class="header-buttons">
+            <button id="profileButton">My Profile</button>
+            <button id="logoutButton">Log Out</button>
+            <button id="usersButton">Users</button>
+        </div>
+    </div>
     <button onclick="window.location.href='/movies.html'">Back to Movies</button>
-    <h1>Users</h1>
     <div id="userList" class="user-list"></div>
 
     <script>
