@@ -2,16 +2,14 @@ let axios = require("axios");
 let path = require("path");
 let express = require("express");
 let app = express();
-let { Pool } = require("pg");
-let argon2 = require("argon2"); 
-let cookieParser = require("cookie-parser"); 
-let crypto = require("crypto"); 
+
 let env = require("../env.json");
 let hostname = "localhost";
 let port = 3000;
 
 let http = require("http");
 let fs = require("fs");
+let { Pool } = require("pg");
 
 let pool = new Pool(env);
 pool.connect().then(() => {
@@ -19,140 +17,68 @@ pool.connect().then(() => {
 });
 
 app.use(express.json());
-app.use(cookieParser());
-
-let authorize = (req, res, next) => {
-  let { token } = req.cookies;
-  if (!token || !tokenStorage.hasOwnProperty(token)) {
-    return res.redirect('/index.html');
-  }
-  next();
-};
-
-app.use('/movies.html', authorize);
-app.use('/profile.html', authorize);
-app.use('/movieInfo.html', authorize);
-app.get('/', (req, res) => {
-    res.redirect('/index.html');
-});
-
 app.use(express.static("public"));
-
 
 const apiKey = env.api_key;
 
+// this function will be called whenever our server receives a request
+// args are request and response objects with these properties:
+// https://nodejs.org/api/http.html#http_class_http_clientrequest
+// https://nodejs.org/api/http.html#http_class_http_serverresponse
+function handleRequest(req, res) {
+  console.log("Request URL:", req.url);
+  console.log("Request headers:", req.headers);
+  console.log("Request method:", req.method);
+  console.log();
 
-let tokenStorage = {};
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/plain");
 
-let cookieOptions = {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-};
+  let path = "site" + req.url;
+  console.log(path);
 
-function makeToken() {
-  return crypto.randomBytes(32).toString("hex");
+  if (isDirectory(path)) {
+    let newPath = path + "/index.html";
+    fileExists(newPath, res);
+  } else {
+    fileExists(path, res);
+  }
 }
 
-function validateLogin(body) {
-  return body.username && body.password;
+function fileExists(path, res) {
+  try {
+    if (fs.existsSync(path)) {
+      setContentType(path, res);
+      res.end(fs.readFileSync(path));
+    } else {
+      res.statusCode = 404;
+      res.end("File not found");
+    }
+  } catch {
+    res.statusCode = 500;
+    res.end("Something went wrong");
+  }
 }
 
-app.post("/create", async (req, res) => {
-  let { username, password } = req.body;
+function isDirectory(path) {
+  return fs.existsSync(path) && fs.lstatSync(path).isDirectory();
+}
 
-  if (!validateLogin(req.body)) {
-    return res.status(400).send("Invalid request data.");
+function setContentType(ext, res) {
+  switch (path.extname(ext)) {
+    case ".html":
+      res.setHeader("Content-Type", "text/html");
+      break;
+    case ".css":
+      res.setHeader("Content-Type", "text/css");
+      break;
+    case ".js":
+      res.setHeader("Content-Type", "text/javascript");
+      break;
   }
+}
 
-  let hash;
-  try {
-    hash = await argon2.hash(password);
-  } catch (error) {
-    console.error("HASH FAILED", error);
-    return res.sendStatus(500);
-  }
-
-  try {
-    await pool.query(`
-      INSERT INTO users (
-        username, 
-        password, 
-        name, 
-        email, 
-        location, 
-        films_watched_list, 
-        favorites_list
-      ) VALUES ($1, $2, $1, $1 || '@example.com', 'Not Set', '[]'::json, '[]'::json)`, 
-      [username, hash]
-    );
-  } catch (error) {
-    console.error("INSERT FAILED", error);
-    return res.sendStatus(500);
-  }
-
-  let token = makeToken();
-  tokenStorage[token] = username;
-  return res.cookie("token", token, cookieOptions).send("Account created and logged in.");
-});
-
-app.post("/login", async (req, res) => {
-  let { username, password } = req.body;
-
-  if (!validateLogin(req.body)) {
-    return res.status(400).send("Invalid request data.");
-  }
-
-  let result;
-  try {
-    result = await pool.query("SELECT password FROM users WHERE username = $1", [username]);
-  } catch (error) {
-    console.error("SELECT FAILED", error);
-    return res.sendStatus(500);
-  }
-
-  if (result.rows.length === 0) {
-    return res.status(400).send("Invalid username or password.");
-  }
-
-  let hash = result.rows[0].password;
-
-  let verifyResult;
-  try {
-    verifyResult = await argon2.verify(hash, password);
-  } catch (error) {
-    console.error("VERIFY FAILED", error);
-    return res.sendStatus(500);
-  }
-
-  if (!verifyResult) {
-    return res.status(400).send("Invalid username or password.");
-  }
-
-  let token = makeToken();
-  tokenStorage[token] = username;
-  return res.cookie("token", token, cookieOptions).send("Logged in successfully.");
-});
-
-app.post("/logout", (req, res) => {
-  let { token } = req.cookies;
-
-  if (!token || !tokenStorage[token]) {
-    return res.status(400).send("Not logged in.");
-  }
-
-  delete tokenStorage[token];
-  return res.clearCookie("token", cookieOptions).send("Logged out successfully.");
-});
-
-app.get("/public", (req, res) => {
-  return res.send("A public message\n");
-});
-
-app.get("/private", authorize, (req, res) => {
-  return res.send("A private message\n");
-});
-
+//add logic here
 app.get(`/genre`, (req, res) => {
   let movieID = req.query.movieID;
   let url = `https://api.themoviedb.org/3/movie/${movieID}?language=en-US`;
@@ -296,10 +222,8 @@ app.get(`/load`, (req, res) => {
   pool.query(
     'SELECT comment_thread FROM MovieComments WHERE movie_id = $1', [movieID]
   ).then((result) => {
-    if (result.rows.length > 0) {
-      console.log(result.rows[0].comment_thread)
-      res.status(200).json(result.rows[0].comment_thread);
-    }
+    console.log(result.rows[0].comment_thread)
+    res.status(200).json(result.rows[0].comment_thread);
   }).catch((error) => {
     console.error("Query error", error);
     res.status(500).json({ error: "Internal server error" });
@@ -342,149 +266,37 @@ app.get('/popular', async (req, res) => {
   }
 });
 
-function getCurrentUser(req) {
-  const token = req.cookies.token;
-  return tokenStorage[token];
-}
-
-app.get('/api/user/profile', authorize, async (req, res) => {
+app.get('/api/user/recommendations', async (req, res) => {
   try {
-    const username = getCurrentUser(req);
-    const result = await pool.query(
-      `SELECT user_id, username, name, email, location, 
-              social_media_links, films_watched_list, favorites_list 
-       FROM users 
-       WHERE username = $1`,
-      [username]
-    );
+      const userId = req.query.userId; // Pass the userId as a query parameter
+      const recommendations = await db.query(
+          'SELECT movie_list FROM recommendations WHERE user_id = $1',
+          [userId]
+      );
+      const movieIds = recommendations.rows[0]?.movie_list || [];
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      // Fetch movie details using an external API or your movie database
+      const movieDetails = await Promise.all(
+          movieIds.map(async (id) => {
+              const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=YOUR_API_KEY`);
+              return response.json();
+          })
+      );
 
-    res.json(result.rows[0]);
+      res.json(movieDetails);
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).json({ error: "Failed to fetch user profile" });
+      console.error('Error fetching recommendations:', error);
+      res.status(500).json({ error: 'Failed to fetch recommendations' });
   }
 });
 
-app.get('/api/user/comments', authorize, async (req, res) => {
-  try {
-    const username = getCurrentUser(req);
-    const result = await pool.query('SELECT movie_id, comment_thread FROM moviecomments');
-    
-    // not sure if this is the most efficient way to do this
-    const allComments = [];
-    result.rows.forEach(row => {
-      const thread = row.comment_thread;
-      
-      const findUserComments = (comments) => {
-        comments.forEach(comment => {
-          if (comment.user === username) {
-            allComments.push({
-              movieId: row.movie_id,
-              text: comment.text,
-              type: comment.type
-            });
-          }
-          if (comment.replies) {
-            findUserComments(comment.replies);
-          }
-        });
-      };
 
-      findUserComments(thread.comments);
-    });
+// sets the response body and sends the response to the client
+// should be called exactly once for each request
 
-    res.json(allComments);
-  } catch (error) {
-    console.error('Error fetching user comments:', error);
-    res.status(500).json({ error: "Failed to fetch user comments" });
-  }
-});
-
-app.get('/api/users', authorize, async (req, res) => {
-    try {
-        const currentUser = getCurrentUser(req);
-        const result = await pool.query(
-            'SELECT user_id, username FROM users WHERE username != $1',
-            [currentUser]
-        );
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ error: "Failed to fetch users" });
-    }
-});
-
-app.get('/api/user/friends', authorize, async (req, res) => {
-    try {
-        const username = getCurrentUser(req);
-        const userResult = await pool.query(
-            'SELECT user_id FROM users WHERE username = $1',
-            [username]
-        );
-        const userId = userResult.rows[0].user_id;
-
-        const friendsResult = await pool.query(
-            `SELECT f.friend_id, u.username 
-             FROM friends f 
-             JOIN users u ON f.friend_id = u.user_id 
-             WHERE f.user_id = $1`,
-            [userId]
-        );
-        res.json(friendsResult.rows);
-    } catch (error) {
-        console.error('Error fetching friends:', error);
-        res.status(500).json({ error: "Failed to fetch friends" });
-    }
-});
-
-app.post('/api/user/friends', authorize, async (req, res) => {
-    try {
-        const username = getCurrentUser(req);
-        const { friendId } = req.body;
-        
-        const userResult = await pool.query(
-            'SELECT user_id FROM users WHERE username = $1',
-            [username]
-        );
-        const userId = userResult.rows[0].user_id;
-
-        await pool.query(
-            'INSERT INTO friends (user_id, friend_id) VALUES ($1, $2)',
-            [userId, friendId]
-        );
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error adding friend:', error);
-        res.status(500).json({ error: "Failed to add friend" });
-    }
-});
-
-app.delete('/api/user/friends', authorize, async (req, res) => {
-    try {
-        const username = getCurrentUser(req);
-        const { friendId } = req.body;
-        
-        const userResult = await pool.query(
-            'SELECT user_id FROM users WHERE username = $1',
-            [username]
-        );
-        const userId = userResult.rows[0].user_id;
-
-        await pool.query(
-            'DELETE FROM friends WHERE user_id = $1 AND friend_id = $2',
-            [userId, friendId]
-        );
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error removing friend:', error);
-        res.status(500).json({ error: "Failed to remove friend" });
-    }
-});
-
-app.listen(port, hostname, () => {
-    console.log(`http://${hostname}:${port}`);
+// now handleRequest will be called whenever our program receives a request
+// the server will automatically pass request and response objects to it
+let server = http.createServer(handleRequest);
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
+  console.log(`Server running on port ${process.env.PORT || 3000}`);
 });
