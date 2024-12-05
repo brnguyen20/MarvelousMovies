@@ -207,16 +207,33 @@
                 if (!recommendations || recommendations.length === 0) {
                     recommendationsContainer.textContent = 'No recommendations yet.';
                 } else {
-                    // Flatten the list of movie IDs from the recommendations response
-                    //const movieIds = recommendations.flatMap(row => row.movie_list);
-                    // Populate the container with the movie IDs
-                    recommendations.forEach(movieId => {
+                    recommendations.forEach(async (movieId) => {
+                    try {
+                        // Fetch the movie title for each movieId
+                        const titleResponse = await fetch(`/title?movieID=${movieId}`);
+                        if (!titleResponse.ok) {
+                            throw new Error(`Failed to fetch title for Movie ID: ${movieId}`);
+                        }
+
+                        const titleData = await titleResponse.json();
+                        console.log(`Title for Movie ID ${movieId}:`, titleData.title);
+
+                        // Create a div to display the movie title
                         const movieDiv = document.createElement('div');
                         movieDiv.className = 'recommendation-item';
-                        movieDiv.textContent = `Movie ID: ${movieId}`;
+                        movieDiv.textContent = `Title: ${titleData.title}`;
                         recommendationsContainer.appendChild(movieDiv);
-                    });
-                }
+                    } catch (error) {
+                        console.error(`Error fetching title for Movie ID ${movieId}:`, error);
+
+                        // Display the movie ID if title fetch fails
+                        const movieDiv = document.createElement('div');
+                        movieDiv.className = 'recommendation-item';
+                        movieDiv.textContent = `Movie ID: ${movieId} (Title not available)`;
+                        recommendationsContainer.appendChild(movieDiv);
+                    }
+                });
+            }
             } catch (error) {
                 console.error('Error loading recommendations:', error);
                 const recommendationsContainer = document.getElementById('myMovieRecommendations');
