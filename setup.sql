@@ -51,6 +51,13 @@ CREATE TABLE friends (
     FOREIGN KEY (friend_id) REFERENCES users(user_id)
 );
 
+CREATE TABLE recommendations(
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    movie_list JSON
+)
+
 -- Testing Purposes (Save for later)
 -- CREATE TABLE Replies (
 --     reply_id SERIAL PRIMARY KEY,
