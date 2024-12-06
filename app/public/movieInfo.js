@@ -99,4 +99,29 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("An error occurred.");
     });
   });
+
+  // Handle removing the movie from recommendations
+const removeFromRecommendationsButton = document.getElementById("removeFromRecommendations");
+removeFromRecommendationsButton.addEventListener("click", () => {
+    fetch("/remove-from-recommendations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ movieID: movieID }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Movie removed from your recommendations list!");
+      } else {
+        alert("Error removing movie from recommendations list.");
+      }
+    })
+    .catch(error => {
+      console.error("Error removing movie from recommendations:", error);
+      alert("An error occurred.");
+    });
+  });
+
 });

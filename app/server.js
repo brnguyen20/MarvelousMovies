@@ -614,6 +614,57 @@ app.post('/add-to-recommendations', authorize, async (req, res) => {
   }
 });
 
+app.post('/remove-from-recommendations', authorize, async (req, res) => {
+  const { movieID } = req.body;
+
+  if (!movieID) {
+    return res.status(400).json({ error: "Movie ID is required" });
+  }
+
+  const username = getCurrentUser(req); // Assuming this function returns user_id
+  let userId = -1;
+  try {
+    // Fetch user_id from the username
+    const result = await pool.query(
+      'SELECT user_id FROM users WHERE username = $1',
+      [username]
+    );
+    userId = result["rows"][0]["user_id"];
+  } catch (error) {
+    console.error("Error fetching user ID:", error);
+    return res.status(500).json({ error: "Failed to fetch user ID" });
+  }
+
+  try {
+    // Fetch the user's current recommendations list
+    const result = await pool.query(
+      'SELECT movie_list FROM recommendations WHERE user_id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: "No recommendations list found for the user" });
+    }
+
+    const movieList = result.rows[0].movie_list;
+
+    // Remove the movie from the list if it exists
+    const updatedMovieList = movieList.filter(id => id !== movieID);
+
+    // Update the database with the new list
+    await pool.query(
+      'UPDATE recommendations SET movie_list = $1 WHERE user_id = $2',
+      [JSON.stringify(updatedMovieList), userId]
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error removing movie from recommendations:", error);
+    res.status(500).json({ error: "Failed to remove movie from recommendations" });
+  }
+});
+
+
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
