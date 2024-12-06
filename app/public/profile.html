@@ -241,10 +241,61 @@
             }
         }
 
+        async function loadFriendRecommendations() {
+            try {
+                const response = await fetch('/api/user/friendsRecommendations'); // Match the server.js route
+                if (!response.ok) {
+                    throw new Error('Failed to fetch friend recommendations');
+                }
+
+                const friendRecommendations = await response.json();
+                const recommendationsContainer = document.getElementById('friendMovieRecommendations');
+
+                // Clear the existing content
+                while (recommendationsContainer.firstChild) {
+                    recommendationsContainer.removeChild(recommendationsContainer.firstChild);
+                }
+
+                if (!friendRecommendations || friendRecommendations.length === 0) {
+                    recommendationsContainer.textContent = 'No friend recommendations yet.';
+                } else {
+                    friendRecommendations.forEach(async (movieId) => {
+                        try {
+                            const titleResponse = await fetch(`/title?movieID=${movieId}`);
+                            if (!titleResponse.ok) {
+                                throw new Error(`Failed to fetch title for Movie ID: ${movieId}`);
+                            }
+
+                            const titleData = await titleResponse.json();
+
+                            const movieDiv = document.createElement('div');
+                            movieDiv.className = 'recommendation-item';
+                            movieDiv.textContent = `Title: ${titleData.title}`;
+                            recommendationsContainer.appendChild(movieDiv);
+                        } catch (error) {
+                            console.error(`Error fetching title for Movie ID ${movieId}:`, error);
+
+                            const movieDiv = document.createElement('div');
+                            movieDiv.className = 'recommendation-item';
+                            movieDiv.textContent = `Movie ID: ${movieId} (Title not available)`;
+                            recommendationsContainer.appendChild(movieDiv);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading friend recommendations:', error);
+                const recommendationsContainer = document.getElementById('friendMovieRecommendations');
+                recommendationsContainer.textContent = 'Error loading friend recommendations.';
+            }
+        }
+
+
+
 
         window.addEventListener('load', () => {
             loadProfile();
             loadRecommendations();
+            loadFriendRecommendations();
         });
     </script>
 </body>

@@ -515,6 +515,53 @@ app.get('/api/user/recommendations', authorize, async (req, res) => {
   }
 });
 
+app.get('/api/user/friendsRecommendations', authorize, async (req, res) => {
+  try {
+    const username = getCurrentUser(req);
+
+    // Get the user's ID
+    const userResult = await pool.query(
+      'SELECT user_id FROM users WHERE username = $1',
+      [username]
+    );
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userId = userResult.rows[0].user_id;
+
+    // Get the list of friend IDs
+    const friendsResult = await pool.query(
+      'SELECT friend_id FROM friends WHERE user_id = $1',
+      [userId]
+    );
+    const friendIds = friendsResult.rows.map(row => row.friend_id);
+
+    if (friendIds.length === 0) {
+      // No friends found
+      return res.json([]);
+    }
+
+    // Get recommendations from all friends
+    const recommendationsResult = await pool.query(
+      'SELECT movie_list FROM recommendations WHERE user_id = ANY($1::int[])',
+      [friendIds]
+    );
+
+    // Compile a single list of movies from all friends' recommendations
+    const friendsMovies = [];
+    recommendationsResult.rows.forEach(row => {
+      if (Array.isArray(row.movie_list)) {
+        friendsMovies.push(...row.movie_list);
+      }
+    });
+
+    res.json(friendsMovies);
+  } catch (error) {
+    console.error('Error fetching friends recommendations:', error);
+    res.status(500).json({ error: 'Failed to fetch friends recommendations' });
+  }
+});
+
 app.post('/add-to-recommendations', authorize, async (req, res) => {
   const { movieID } = req.body;
 
