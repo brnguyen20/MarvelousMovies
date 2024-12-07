@@ -379,15 +379,6 @@ app.get('/api/user/profile', authorize, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-app.listen(port, host, () => {
-    console.log(`http://${host}:${port}`);
-});
-
-// app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
-//   console.log(`Server running on port ${process.env.PORT || 3000}`);
-// });
-=======
 app.get('/api/user/comments', authorize, async (req, res) => {
   try {
     const username = getCurrentUser(req);
@@ -504,7 +495,6 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
 app.get('/api/user/recommendations', authorize, async (req, res) => {
   try {
       const username = getCurrentUser(req);
@@ -681,7 +671,9 @@ app.post('/remove-from-recommendations', authorize, async (req, res) => {
   } catch (error) {
     console.error("Error removing movie from recommendations:", error);
     res.status(500).json({ error: "Failed to remove movie from recommendations" });
-=======
+  }
+});
+
 app.post('/api/rating', authorize, async (req, res) => {
   const { user_id, movie_id, star_rating, content } = req.body;
 
@@ -734,7 +726,6 @@ app.get('/api/ratings', authorize, async (req, res) => {
   } catch (error) {
     console.error('Error fetching ratings:', error);
     res.status(500).json({ error: 'Failed to fetch ratings' });
->>>>>>> main
   }
 });
 
@@ -742,7 +733,3 @@ app.get('/api/ratings', authorize, async (req, res) => {
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
-<<<<<<< HEAD
-=======
->>>>>>> main
->>>>>>> main

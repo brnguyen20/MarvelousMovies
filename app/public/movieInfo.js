@@ -16,10 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(data => {
       const detailsElement = document.getElementById("movieDetails");
       const titleElement = document.getElementById("movieTitle");
-<<<<<<< HEAD
       titleElement.textContent = data.original_title;
       detailsElement.textContent = JSON.stringify(data);
-=======
   
       titleElement.textContent = data.original_title;
   
@@ -78,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
       // Append the created movie info to the details element
       detailsElement.appendChild(movieInfoDiv);
->>>>>>> main
     })
     .catch(error => console.error("Error fetching details:", error));
   
@@ -140,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(error => console.error("Error fetching images:", error));
-<<<<<<< HEAD
 
   // Handle adding the movie to recommendations
   const addToRecommendationsButton = document.getElementById("addToRecommendations");
@@ -191,7 +187,3 @@ removeFromRecommendationsButton.addEventListener("click", () => {
   });
 
 });
-=======
-  
-})
->>>>>>> main
