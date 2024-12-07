@@ -7,13 +7,24 @@ let argon2 = require("argon2");
 let cookieParser = require("cookie-parser"); 
 let crypto = require("crypto"); 
 let env = require("../env.json");
-let hostname = "localhost";
 let port = 3000;
 
 let http = require("http");
 let fs = require("fs");
 
-let pool = new Pool(env);
+let host;
+let databaseConfig;
+// fly.io sets NODE_ENV to production automatically, otherwise it's unset when running locally
+if (process.env.NODE_ENV == "production") {
+	host = "0.0.0.0";
+	databaseConfig = { connectionString: process.env.DATABASE_URL };
+} else {
+	host = "localhost";
+	let { PGUSER, PGPASSWORD, PGDATABASE, PGHOST, PGPORT } = process.env;
+	databaseConfig = { PGUSER, PGPASSWORD, PGDATABASE, PGHOST, PGPORT };
+}
+
+let pool = new Pool(databaseConfig);
 pool.connect().then(() => {
   console.log("Connected to database");
 });
@@ -37,7 +48,6 @@ app.get('/', (req, res) => {
 });
 
 app.use(express.static("public"));
-
 
 const apiKey = env.api_key;
 
@@ -369,6 +379,15 @@ app.get('/api/user/profile', authorize, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+app.listen(port, host, () => {
+    console.log(`http://${host}:${port}`);
+});
+
+// app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
+//   console.log(`Server running on port ${process.env.PORT || 3000}`);
+// });
+=======
 app.get('/api/user/comments', authorize, async (req, res) => {
   try {
     const username = getCurrentUser(req);
@@ -544,3 +563,4 @@ app.get('/api/ratings', authorize, async (req, res) => {
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
+>>>>>>> main
