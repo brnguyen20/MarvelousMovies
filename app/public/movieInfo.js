@@ -4,81 +4,79 @@ document.addEventListener("DOMContentLoaded", () => {
   const movieID = params.get('movieId'); 
 
   fetch(`/genre?movieID=${movieID}`)
-    .then(response => response.json())
-    .then(data => {
-      const genreElement = document.getElementById("movieGenre");
-      genreElement.textContent = data.genres ? data.genres.join(", ") : "Genre not found";
-    })
-    .catch(error => console.error("Error fetching genre:", error));
+  .then(response => response.json())
+  .then(data => {
+    const genreElement = document.getElementById("movieGenre");
+    genreElement.textContent = data.genres ? data.genres.join(", ") : "Genre not found";
+  })
+  .catch(error => console.error("Error fetching genre:", error));
 
-    fetch(`/details?movieID=${movieID}`)
-    .then(response => response.json())
-    .then(data => {
-      const detailsElement = document.getElementById("movieDetails");
-      const titleElement = document.getElementById("movieTitle");
-      titleElement.textContent = data.original_title;
-      detailsElement.textContent = JSON.stringify(data);
-  
-      titleElement.textContent = data.original_title;
-  
-      const movieInfoDiv = document.createElement('div');
-  
-      const taglinePara = document.createElement("p");
-      taglinePara.textContent = `${data.tagline}`;
-      taglinePara.style.fontWeight = "bold";  // Make text bold
-      taglinePara.style.fontSize = "2rem";  // Increase font size (adjust as needed)
-      movieInfoDiv.appendChild(taglinePara);
+  fetch(`/details?movieID=${movieID}`)
+  .then(response => response.json())
+  .then(data => {
+    const detailsElement = document.getElementById("movieDetails");
+    const titleElement = document.getElementById("movieTitle");
 
-  
-      const overviewPara = document.createElement('p');
-      overviewPara.textContent = `Overview: ${data.overview}`;
-      movieInfoDiv.appendChild(overviewPara);
-  
-      const genresPara = document.createElement('p');
-      genresPara.textContent = `Genres: ${data.genres.map(genre => genre.name).join(', ')}`;
-      movieInfoDiv.appendChild(genresPara);
-  
-      const releaseDatePara = document.createElement('p');
-      releaseDatePara.textContent = `Release Date: ${data.release_date}`;
-      movieInfoDiv.appendChild(releaseDatePara);
-  
-      const runtimePara = document.createElement('p');
-      runtimePara.textContent = `Runtime: ${data.runtime} minutes`;
-      movieInfoDiv.appendChild(runtimePara);
-  
-      const budgetPara = document.createElement('p');
-      budgetPara.textContent = `Budget: $${data.budget.toLocaleString()}`;
-      movieInfoDiv.appendChild(budgetPara);
-  
-      const revenuePara = document.createElement('p');
-      revenuePara.textContent = `Revenue: $${data.revenue.toLocaleString()}`;
-      movieInfoDiv.appendChild(revenuePara);
-  
-      const productionCompaniesPara = document.createElement('p');
-      productionCompaniesPara.textContent = `Production Companies: ${data.production_companies.map(company => company.name).join(', ')}`;
-      movieInfoDiv.appendChild(productionCompaniesPara);
-  
-      const statusPara = document.createElement('p');
-      statusPara.textContent = `Status: ${data.status}`;
-      movieInfoDiv.appendChild(statusPara);
-  
-      const imdbRatingPara = document.createElement('p');
-      imdbRatingPara.textContent = `IMDb Rating: ${data.vote_average} / 10 (from ${data.vote_count} votes)`;
-      movieInfoDiv.appendChild(imdbRatingPara);
-  
-      const homepagePara = document.createElement('p');
-      const homepageLink = document.createElement('a');
-      homepageLink.href = data.homepage;
-      homepageLink.textContent = "Visit Website";
-      homepageLink.target = "_blank";
-      homepagePara.appendChild(homepageLink);
-      movieInfoDiv.appendChild(homepagePara);
-  
-      // Append the created movie info to the details element
-      detailsElement.appendChild(movieInfoDiv);
-    })
-    .catch(error => console.error("Error fetching details:", error));
-  
+    titleElement.textContent = data.original_title;
+
+    const movieInfoDiv = document.createElement('div');
+
+    const taglinePara = document.createElement("p");
+    taglinePara.textContent = `${data.tagline}`;
+    taglinePara.style.fontWeight = "bold";  // Make text bold
+    taglinePara.style.fontSize = "2rem";  // Increase font size (adjust as needed)
+    movieInfoDiv.appendChild(taglinePara);
+
+
+    const overviewPara = document.createElement('p');
+    overviewPara.textContent = `Overview: ${data.overview}`;
+    movieInfoDiv.appendChild(overviewPara);
+
+    const genresPara = document.createElement('p');
+    genresPara.textContent = `Genres: ${data.genres.map(genre => genre.name).join(', ')}`;
+    movieInfoDiv.appendChild(genresPara);
+
+    const releaseDatePara = document.createElement('p');
+    releaseDatePara.textContent = `Release Date: ${data.release_date}`;
+    movieInfoDiv.appendChild(releaseDatePara);
+
+    const runtimePara = document.createElement('p');
+    runtimePara.textContent = `Runtime: ${data.runtime} minutes`;
+    movieInfoDiv.appendChild(runtimePara);
+
+    const budgetPara = document.createElement('p');
+    budgetPara.textContent = `Budget: $${data.budget.toLocaleString()}`;
+    movieInfoDiv.appendChild(budgetPara);
+
+    const revenuePara = document.createElement('p');
+    revenuePara.textContent = `Revenue: $${data.revenue.toLocaleString()}`;
+    movieInfoDiv.appendChild(revenuePara);
+
+    const productionCompaniesPara = document.createElement('p');
+    productionCompaniesPara.textContent = `Production Companies: ${data.production_companies.map(company => company.name).join(', ')}`;
+    movieInfoDiv.appendChild(productionCompaniesPara);
+
+    const statusPara = document.createElement('p');
+    statusPara.textContent = `Status: ${data.status}`;
+    movieInfoDiv.appendChild(statusPara);
+
+    const imdbRatingPara = document.createElement('p');
+    imdbRatingPara.textContent = `IMDb Rating: ${data.vote_average} / 10 (from ${data.vote_count} votes)`;
+    movieInfoDiv.appendChild(imdbRatingPara);
+
+    const homepagePara = document.createElement('p');
+    const homepageLink = document.createElement('a');
+    homepageLink.href = data.homepage;
+    homepageLink.textContent = "Visit Website";
+    homepageLink.target = "_blank";
+    homepagePara.appendChild(homepageLink);
+    movieInfoDiv.appendChild(homepagePara);
+
+    // Append the created movie info to the details element
+    detailsElement.appendChild(movieInfoDiv);
+  })
+  .catch(error => console.error("Error fetching details:", error));
+
 
   fetch(`/cast?movieID=${movieID}`)
     .then(response => response.json())
