@@ -12,7 +12,7 @@ let port = 3000;
 let http = require("http");
 let fs = require("fs");
 
-let hostname = "localhost";
+let host;
 let databaseConfig;
 // fly.io sets NODE_ENV to production automatically, otherwise it's unset when running locally
 if (process.env.NODE_ENV == "production") {
@@ -738,6 +738,6 @@ app.get('/api/ratings', authorize, async (req, res) => {
 });
 
 
-app.listen(port, hostname, () => {
-    console.log(`http://${hostname}:${port}`);
+app.listen(port, host, () => {
+    console.log(`http://${host}:${port}`);
 });
