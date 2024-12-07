@@ -93,8 +93,8 @@ app.post("/create", async (req, res) => {
         location, 
         films_watched_list, 
         favorites_list
-      ) VALUES ($1, $2, $1, $1 || '@example.com', 'Not Set', '[]'::json, '[]'::json)`, 
-      [username, hash]
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
+      [username, hash, username, `${username}@example.com`, 'Not Set', '[]', '[]']
     );
   } catch (error) {
     console.error("INSERT FAILED", error);
@@ -352,13 +352,11 @@ app.get('/popular', async (req, res) => {
   }
 });
 
-// Add this helper function to get username from token
 function getCurrentUser(req) {
   const token = req.cookies.token;
   return tokenStorage[token];
 }
 
-// Get basic user profile information
 app.get('/api/user/profile', authorize, async (req, res) => {
   try {
     const username = getCurrentUser(req);
@@ -381,6 +379,7 @@ app.get('/api/user/profile', authorize, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 app.listen(port, host, () => {
     console.log(`http://${host}:${port}`);
 });
@@ -388,3 +387,180 @@ app.listen(port, host, () => {
 // app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
 //   console.log(`Server running on port ${process.env.PORT || 3000}`);
 // });
+=======
+app.get('/api/user/comments', authorize, async (req, res) => {
+  try {
+    const username = getCurrentUser(req);
+    const result = await pool.query('SELECT movie_id, comment_thread FROM moviecomments');
+    
+    // not sure if this is the most efficient way to do this
+    const allComments = [];
+    result.rows.forEach(row => {
+      const thread = row.comment_thread;
+      
+      const findUserComments = (comments) => {
+        comments.forEach(comment => {
+          if (comment.user === username) {
+            allComments.push({
+              movieId: row.movie_id,
+              text: comment.text,
+              type: comment.type
+            });
+          }
+          if (comment.replies) {
+            findUserComments(comment.replies);
+          }
+        });
+      };
+
+      findUserComments(thread.comments);
+    });
+
+    res.json(allComments);
+  } catch (error) {
+    console.error('Error fetching user comments:', error);
+    res.status(500).json({ error: "Failed to fetch user comments" });
+  }
+});
+
+app.get('/api/users', authorize, async (req, res) => {
+    try {
+        const currentUser = getCurrentUser(req);
+        const result = await pool.query(
+            'SELECT user_id, username FROM users WHERE username != $1',
+            [currentUser]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
+});
+
+app.get('/api/user/friends', authorize, async (req, res) => {
+    try {
+        const username = getCurrentUser(req);
+        const userResult = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [username]
+        );
+        const userId = userResult.rows[0].user_id;
+
+        const friendsResult = await pool.query(
+            `SELECT f.friend_id, u.username 
+             FROM friends f 
+             JOIN users u ON f.friend_id = u.user_id 
+             WHERE f.user_id = $1`,
+            [userId]
+        );
+        res.json(friendsResult.rows);
+    } catch (error) {
+        console.error('Error fetching friends:', error);
+        res.status(500).json({ error: "Failed to fetch friends" });
+    }
+});
+
+app.post('/api/user/friends', authorize, async (req, res) => {
+    try {
+        const username = getCurrentUser(req);
+        const { friendId } = req.body;
+        
+        const userResult = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [username]
+        );
+        const userId = userResult.rows[0].user_id;
+
+        await pool.query(
+            'INSERT INTO friends (user_id, friend_id) VALUES ($1, $2)',
+            [userId, friendId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error adding friend:', error);
+        res.status(500).json({ error: "Failed to add friend" });
+    }
+});
+
+app.delete('/api/user/friends', authorize, async (req, res) => {
+    try {
+        const username = getCurrentUser(req);
+        const { friendId } = req.body;
+        
+        const userResult = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [username]
+        );
+        const userId = userResult.rows[0].user_id;
+
+        await pool.query(
+            'DELETE FROM friends WHERE user_id = $1 AND friend_id = $2',
+            [userId, friendId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error removing friend:', error);
+        res.status(500).json({ error: "Failed to remove friend" });
+    }
+});
+
+app.post('/api/rating', authorize, async (req, res) => {
+  const { user_id, movie_id, star_rating, content } = req.body;
+
+  if (!user_id || !movie_id || !star_rating) {
+    return res.status(400).json({ error: 'User ID, Movie ID, and Star Rating are required' });
+  }
+
+  try {
+    const existingRating = await pool.query(
+      'SELECT * FROM review WHERE user_id = $1 AND movie_id = $2', 
+      [user_id, movie_id]
+    );
+
+    if (existingRating.rows.length > 0) {
+      await pool.query(
+        'UPDATE review SET star_rating = $1, content = $2 WHERE user_id = $3 AND movie_id = $4', 
+        [star_rating, content, user_id, movie_id]
+      );
+      res.status(200).json({ message: 'Rating updated successfully!' });
+    } else {
+      await pool.query(
+        'INSERT INTO review (user_id, movie_id, star_rating, content) VALUES ($1, $2, $3, $4)', 
+        [user_id, movie_id, star_rating, content]
+      );
+      res.status(200).json({ message: 'Rating posted successfully!' });
+    }
+  } catch (error) {
+    console.error('Error saving rating:', error);
+    res.status(500).json({ error: 'Failed to save rating' });
+  }
+});
+
+app.get('/api/ratings', authorize, async (req, res) => {
+  const { movie_id } = req.query;
+
+  if (!movie_id) {
+    return res.status(400).json({ error: 'Movie ID is required' });
+  }
+
+  try {
+    const ratings = await pool.query(
+      `SELECT r.user_id, r.star_rating, r.content, u.username, r.likes
+       FROM review r 
+       JOIN users u ON r.user_id = u.user_id 
+       WHERE r.movie_id = $1`,
+      [movie_id]
+    );
+
+    res.status(200).json(ratings.rows);
+  } catch (error) {
+    console.error('Error fetching ratings:', error);
+    res.status(500).json({ error: 'Failed to fetch ratings' });
+  }
+});
+
+
+app.listen(port, hostname, () => {
+    console.log(`http://${hostname}:${port}`);
+});
+>>>>>>> main

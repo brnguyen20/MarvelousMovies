@@ -1,7 +1,126 @@
+.comment, .reply {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #ffffff; 
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    border: none;
+}
+
 .comment {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
+    border-left: 5px solid #007bff; 
 }
 
 .reply {
     margin-left: 40px;
+    border-left: 3px solid #00c1ff; 
+}
+
+button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.replyFormOpen {
+    margin-top: 10px;
+    border-top: 2px solid #ddd;
+    padding-top: 15px;
+}
+
+textarea {
+    width: 100%;
+    height: 60px;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    resize: none;
+}
+
+textarea:focus {
+    border-color: #007bff;
+}
+
+.replyFormOpen button {
+    width: 100px;
+    margin-right: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+#commentText:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+#comments {
+    padding: 20px;
+    background-color: #ffffff; 
+    border-radius: 8px;
+    margin-top: 10px; 
+}
+
+
+.comment-box {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #ffffff; 
+    max-width: 600px;
+    margin-bottom: 10px; 
+    border: none;
+    box-shadow: none; 
+}
+
+
+#commentButton {
+    padding: 8px 12px;
+    margin-left: 10px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#commentButton:hover {
+    background-color: #0056b3;
+}
+
+#commentText {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.comment strong {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.reply p {
+    margin: 0;
+}
+
+#comments:empty {
+    text-align: center;
+    font-style: italic;
+    color: #aaa;
 }

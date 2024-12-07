@@ -1,0 +1,205 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;  /* Dark background */
+    color: #e0e0e0;  /* Light text color for contrast */
+}
+
+#moviesButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#moviesButton:hover {
+    background-color: #0056b3;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #fff;  /* White color for title */
+}
+
+#movieImages {
+display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    border-radius: 0px;
+}
+
+#movieImages img {
+    max-width: 100%;
+    width: auto;
+    max-height: 400px;
+    border-radius: 10px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: #fff;  /* White color for headings */
+}
+
+#movieDetailsBox {
+    border: 1px solid #444;  /* Darker border */
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #1e1e1e;  /* Dark background for details box */
+    color: #e0e0e0;  /* Light text color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+#movieCast {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.cast-member {
+    background-color: #333;  /* Dark background for cast member */
+    border: 1px solid #444;  /* Dark border */
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cast-member img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+#ratingSection,
+#topLevelComment,
+#comments {
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+#ratingSection {
+    background-color: #2a2a2a;  /* Dark background for rating section */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#ratingDescription {
+    background-color: #333;  /* Dark background for text area */
+    color: #000000;  /* White text */
+    border: 1px solid #444;  /* Dark border */
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+}
+
+#ratingPostButton { 
+    background-color: #007BFF;  
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#ratingPostButton:hover {
+    background-color: #0056b3;
+}
+
+#comments {
+    background-color: #2a2a2a;  /* Dark background for comments section */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.comment-box {
+    background-color: #333;  /* Dark background for comment box */
+    color: #fff;  /* White text */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+textarea {
+    background-color: #333;
+    color: #000000;
+    border: 1px solid #444;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+#movieGenreBox,
+#movieCastBox {
+    border: 1px solid #444;  /* Dark border for boxes */
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #1e1e1e;  /* Dark background for genre and cast boxes */
+    color: #e0e0e0;  /* Light text color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+#movieGenreBox h2,
+#movieCastBox h2 {
+    color: #fff;  /* White color for headings inside these boxes */
+}
+
+#movieCast {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.cast-member {
+    background-color: #333;  /* Dark background for cast member */
+    border: 1px solid #444;  /* Dark border */
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cast-member img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.center-text {
+    text-align: center;
+}

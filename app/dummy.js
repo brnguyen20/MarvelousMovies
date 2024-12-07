@@ -62,6 +62,36 @@ const dummyUsers = [
     following_list: [],
     films_watched_list: [550],
     custom_lists: {}
+  },
+  {
+    username: "FilmFanatic",
+    password: "filmfanatic",
+    name: "Alex Chen",
+    email: "alex.chen@example.com",
+    location: "CA",
+    activity: {
+      last_login: "2024-11-01T10:15:00Z",
+      recent_activities: [
+        {
+          type: "watched",
+          movie_id: 278,
+          title: "The Shawshank Redemption",
+          timestamp: "2024-10-31T20:00:00Z"
+        }
+      ]
+    },
+    social_media_links: {
+      Letterboxd: "https://letterboxd.com/filmfanatic"
+    },
+    reviews_list: [],
+    favorites_list: [278, 550, 680], // Shawshank, Fight Club, Pulp Fiction
+    follower_list: [],
+    following_list: [],
+    films_watched_list: [278, 550, 680, 238],
+    custom_lists: {
+      "Must Watch Classics": [278, 680],
+      "Modern Favorites": [550]
+    }
   }
 ];
 
@@ -179,12 +209,31 @@ const dummyMovieComments = [
         }
       ]
     }
+  },
+  {
+    movie_id: 680, 
+    comment_thread: {
+      comments: [
+        {
+          user: "FilmFanatic",
+          type: "top-level",
+          text: "A masterpiece of non-linear storytelling!",
+          replies: [
+            {
+              user: "MovieBuff",
+              type: "reply",
+              text: "Totally agree, Tarantino at his best.",
+              replies: []
+            }
+          ]
+        }
+      ]
+    }
   }
 ];
 
 pool.connect().then(async (client) => {
   try {
-    // Insert Users
     for (const userData of dummyUsers) {
       const existingUser = await client.query(
         `SELECT * FROM users WHERE email = $1`,
@@ -193,7 +242,7 @@ pool.connect().then(async (client) => {
 
       if (existingUser.rows.length > 0) {
         console.log(`User with email ${userData.email} already exists. Skipping insertion.`);
-        continue; // Skip this user if they already exist
+        continue; 
       }
 
       const hash = await argon2.hash(userData.password);
@@ -221,13 +270,11 @@ pool.connect().then(async (client) => {
       console.log(`Inserted user: ${userData.username}`);
     }
 
-    // Retrieve user IDs for mapping
     const userResult = await client.query("SELECT user_id, username FROM users");
     const userMap = Object.fromEntries(
       userResult.rows.map(row => [row.username, row.user_id])
     );
 
-    // Insert Reviews
     for (const review of dummyReviews) {
       await client.query(
         `INSERT INTO review (user_id, movie_id, star_rating, content, likes)
@@ -237,7 +284,6 @@ pool.connect().then(async (client) => {
       console.log(`Inserted review for movie: ${review.movie_id}`);
     }
 
-    // Insert Movie Comments
     for (const commentData of dummyMovieComments) {
       await client.query(
         `INSERT INTO moviecomments (movie_id, comment_thread)
