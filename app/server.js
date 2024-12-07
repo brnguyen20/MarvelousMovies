@@ -32,7 +32,7 @@ if (process.env.NODE_ENV == "production") {
 	databaseConfig = { PGUSER, PGPASSWORD, PGDATABASE, PGHOST, PGPORT };
 }
 
-let pool = new Pool(env);
+let pool = new Pool(databaseConfig);
 pool.connect().then(() => {
   console.log("Connected to database");
 });
