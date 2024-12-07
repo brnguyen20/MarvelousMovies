@@ -94,10 +94,28 @@
         .profile-field span, .comment-item, .friend-item {
             color: #e0e0e0;
         }
+        
+        #moviesButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #moviesButton:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.location.href='/movies.html'">Back to Movies</button>
+    <button class="back-button" onclick="window.location.href='/movies.html'" id="moviesButton">View All Movies</button>
     <div class="profile-container" id="profileData">
         <h1>User Profile</h1>
         <div class="profile-field">
