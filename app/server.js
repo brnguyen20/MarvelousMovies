@@ -12,7 +12,7 @@ let port = 3000;
 let http = require("http");
 let fs = require("fs");
 
-let host;
+let hostname = "localhost";
 let databaseConfig;
 // fly.io sets NODE_ENV to production automatically, otherwise it's unset when running locally
 if (process.env.NODE_ENV == "production") {
@@ -21,6 +21,14 @@ if (process.env.NODE_ENV == "production") {
 } else {
 	host = "localhost";
 	let { PGUSER, PGPASSWORD, PGDATABASE, PGHOST, PGPORT } = process.env;
+
+	// Log the values to check if they are set correctly
+	console.log("PGUSER:", PGUSER);
+	console.log("PGPASSWORD:", PGPASSWORD);
+	console.log("PGDATABASE:", PGDATABASE);
+	console.log("PGHOST:", PGHOST);
+	console.log("PGPORT:", PGPORT);
+
 	databaseConfig = { PGUSER, PGPASSWORD, PGDATABASE, PGHOST, PGPORT };
 }
 
