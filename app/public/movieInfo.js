@@ -1,8 +1,6 @@
-const submitButton = document.getElementById("submitButton");
-
 document.addEventListener("DOMContentLoaded", () => {
-  params = new URLSearchParams(window.location.search);
-
+  console.log("movieinfo log");
+  const params = new URLSearchParams(window.location.search);
   const movieID = params.get('movieId'); 
 
   fetch(`/genre?movieID=${movieID}`)
@@ -18,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(data => {
       const detailsElement = document.getElementById("movieDetails");
       const titleElement = document.getElementById("movieTitle");
+      titleElement.textContent = data.original_title;
+      detailsElement.textContent = JSON.stringify(data);
   
       titleElement.textContent = data.original_title;
   
@@ -137,5 +137,53 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(error => console.error("Error fetching images:", error));
-  
-})
+
+  // Handle adding the movie to recommendations
+  const addToRecommendationsButton = document.getElementById("addToRecommendations");
+  addToRecommendationsButton.addEventListener("click", () => {
+    fetch("/add-to-recommendations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ movieID: movieID }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Movie added to your recommendations list!");
+      } else {
+        alert("Error adding movie to recommendations list.");
+      }
+    })
+    .catch(error => {
+      console.error("Error adding movie to recommendations:", error);
+      alert("An error occurred.");
+    });
+  });
+
+  // Handle removing the movie from recommendations
+const removeFromRecommendationsButton = document.getElementById("removeFromRecommendations");
+removeFromRecommendationsButton.addEventListener("click", () => {
+    fetch("/remove-from-recommendations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ movieID: movieID }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Movie removed from your recommendations list!");
+      } else {
+        alert("Error removing movie from recommendations list.");
+      }
+    })
+    .catch(error => {
+      console.error("Error removing movie from recommendations:", error);
+      alert("An error occurred.");
+    });
+  });
+
+});

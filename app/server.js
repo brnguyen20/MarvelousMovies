@@ -379,15 +379,6 @@ app.get('/api/user/profile', authorize, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-app.listen(port, host, () => {
-    console.log(`http://${host}:${port}`);
-});
-
-// app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
-//   console.log(`Server running on port ${process.env.PORT || 3000}`);
-// });
-=======
 app.get('/api/user/comments', authorize, async (req, res) => {
   try {
     const username = getCurrentUser(req);
@@ -504,6 +495,185 @@ app.delete('/api/user/friends', authorize, async (req, res) => {
     }
 });
 
+app.get('/api/user/recommendations', authorize, async (req, res) => {
+  try {
+      const username = getCurrentUser(req);
+
+      // Get the user's ID from the username
+      const result = await pool.query(
+          'SELECT user_id FROM users WHERE username = $1',
+          [username]
+      );
+      const userId = result.rows[0].user_id;
+
+      // Fetch the movie_list for this user
+      const recommendationsResult = await pool.query(
+          'SELECT movie_list FROM recommendations WHERE user_id = $1',
+          [userId]
+      );
+
+      if (recommendationsResult.rows.length === 0) {
+          // No recommendations for the user
+          return res.json([]);
+      }
+
+      const movieList = recommendationsResult.rows[0].movie_list;
+      res.json(movieList || []);
+  } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      res.status(500).json({ error: 'Failed to fetch recommendations' });
+  }
+});
+
+app.get('/api/user/friendsRecommendations', authorize, async (req, res) => {
+  try {
+    const username = getCurrentUser(req);
+
+    // Get the user's ID
+    const userResult = await pool.query(
+      'SELECT user_id FROM users WHERE username = $1',
+      [username]
+    );
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userId = userResult.rows[0].user_id;
+
+    // Get the list of friend IDs
+    const friendsResult = await pool.query(
+      'SELECT friend_id FROM friends WHERE user_id = $1',
+      [userId]
+    );
+    const friendIds = friendsResult.rows.map(row => row.friend_id);
+
+    if (friendIds.length === 0) {
+      // No friends found
+      return res.json([]);
+    }
+
+    // Get recommendations from all friends
+    const recommendationsResult = await pool.query(
+      'SELECT movie_list FROM recommendations WHERE user_id = ANY($1::int[])',
+      [friendIds]
+    );
+
+    // Compile a single list of movies from all friends' recommendations
+    const friendsMovies = [];
+    recommendationsResult.rows.forEach(row => {
+      if (Array.isArray(row.movie_list)) {
+        friendsMovies.push(...row.movie_list);
+      }
+    });
+
+    res.json(friendsMovies);
+  } catch (error) {
+    console.error('Error fetching friends recommendations:', error);
+    res.status(500).json({ error: 'Failed to fetch friends recommendations' });
+  }
+});
+
+app.post('/add-to-recommendations', authorize, async (req, res) => {
+  const { movieID } = req.body;
+
+  if (!movieID) {
+    return res.status(400).json({ error: "Movie ID is required" });
+  }
+
+  const username = getCurrentUser(req); // Assuming this function now returns user_id, not username
+  let userId = -1;
+  try {
+    console.log("fetching userId");
+    const result = await pool.query(
+      'SELECT user_id FROM users WHERE username = $1',
+      [username]
+    );
+    userId = result["rows"][0]["user_id"];
+  } catch(error) {
+    console.log(error);
+  }
+  try {
+    // Fetch the user's current recommendations list using user_id
+    const result = await pool.query(
+      'SELECT movie_list FROM recommendations WHERE user_id = $1',
+      [userId]
+    );
+    console.log(userId);
+    if (result.rows.length === 0) {
+      // If no recommendations list exists for the user, create one
+      await pool.query(
+        'INSERT INTO recommendations (user_id, movie_list) VALUES ($1, $2)',
+        [userId, JSON.stringify([movieID])]
+      );
+    } else {
+      // If the list exists, add the movie to the list
+      const movieList = result.rows[0].movie_list;
+      if (!movieList.includes(movieID)) {
+        movieList.push(movieID); // Add the movie if it's not already in the list
+        console.log("movieList:" + movieList);
+        await pool.query(
+          'UPDATE recommendations SET movie_list = $1 WHERE user_id = $2',
+          [JSON.stringify(movieList), userId]
+        );
+      }
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error adding movie to recommendations:", error);
+    res.status(500).json({ error: "Failed to add movie to recommendations" });
+  }
+});
+
+app.post('/remove-from-recommendations', authorize, async (req, res) => {
+  const { movieID } = req.body;
+
+  if (!movieID) {
+    return res.status(400).json({ error: "Movie ID is required" });
+  }
+
+  const username = getCurrentUser(req); // Assuming this function returns user_id
+  let userId = -1;
+  try {
+    // Fetch user_id from the username
+    const result = await pool.query(
+      'SELECT user_id FROM users WHERE username = $1',
+      [username]
+    );
+    userId = result["rows"][0]["user_id"];
+  } catch (error) {
+    console.error("Error fetching user ID:", error);
+    return res.status(500).json({ error: "Failed to fetch user ID" });
+  }
+
+  try {
+    // Fetch the user's current recommendations list
+    const result = await pool.query(
+      'SELECT movie_list FROM recommendations WHERE user_id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: "No recommendations list found for the user" });
+    }
+
+    const movieList = result.rows[0].movie_list;
+
+    // Remove the movie from the list if it exists
+    const updatedMovieList = movieList.filter(id => id !== movieID);
+
+    // Update the database with the new list
+    await pool.query(
+      'UPDATE recommendations SET movie_list = $1 WHERE user_id = $2',
+      [JSON.stringify(updatedMovieList), userId]
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error removing movie from recommendations:", error);
+    res.status(500).json({ error: "Failed to remove movie from recommendations" });
+  }
+});
+
 app.post('/api/rating', authorize, async (req, res) => {
   const { user_id, movie_id, star_rating, content } = req.body;
 
@@ -563,4 +733,3 @@ app.get('/api/ratings', authorize, async (req, res) => {
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}`);
 });
->>>>>>> main
