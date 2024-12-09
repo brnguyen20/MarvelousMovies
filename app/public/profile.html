@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <link rel="icon" type="image/png" href="/logo.png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,7 +61,7 @@
             overflow-y: auto;
         }
         .comment-item, .recommendation-item {
-            background: white;
+            background: #333;
             padding: 10px;
             margin: 5px 0;
             border-radius: 4px;
@@ -279,7 +280,7 @@
                         // Create a div to display the movie title
                         const movieDiv = document.createElement('div');
                         movieDiv.className = 'recommendation-item';
-                        movieDiv.textContent = `Title: ${titleData.title}`;
+                        movieDiv.textContent = `${titleData.title}`;
                         recommendationsContainer.appendChild(movieDiv);
                     } catch (error) {
                         console.error(`Error fetching title for Movie ID ${movieId}:`, error);
@@ -328,7 +329,7 @@
 
                             const movieDiv = document.createElement('div');
                             movieDiv.className = 'recommendation-item';
-                            movieDiv.textContent = `Title: ${titleData.title}`;
+                            movieDiv.textContent = `${titleData.title}`;
                             recommendationsContainer.appendChild(movieDiv);
                         } catch (error) {
                             console.error(`Error fetching title for Movie ID ${movieId}:`, error);
