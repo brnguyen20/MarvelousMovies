@@ -32,6 +32,31 @@
       display: flex;
       gap: 15px;
     }
+    .header-title {
+      margin-left: 20px;
+      flex-grow: 1; /* Push the buttons to the right */
+    }
+
+    .header-title h1 {
+      font-size: 32px;
+      margin: 0;
+      display: flex;
+      align-items: baseline;
+      text-shadow: 
+        1px 1px 0 #fff, 
+        -1px 1px 0 #fff, 
+        1px -1px 0 #fff, 
+        -1px -1px 0 #fff;
+    }
+
+    .black-text {
+      color: black;
+    }
+
+    .blue-text {
+      color: blue;
+      margin-left: 5px;
+    }
 
     button {
       padding: 8px 16px;
@@ -131,6 +156,12 @@
 <body>
   <div class="header-container">
     <img src="logo.png" alt="Logo">
+    <div class="header-title">
+      <h1>
+        <span class="black-text">Marvelous</span>
+        <span class="blue-text">Movies</span>
+      </h1>
+    </div>
     <div class="header-buttons">
       <button id="profileButton">My Profile</button>
       <button id="logoutButton">Log Out</button>
