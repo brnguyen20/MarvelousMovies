@@ -138,11 +138,11 @@
                     button.id = `friend-${user.user_id}`;
                     button.textContent = isFriend ? 'Unfriend' : 'Friend';
                     
-                    if(isFriend){
-                        div.appendChild(usernameSpan);
-                        div.appendChild(button);
-                        userList.appendChild(div);
-                    }
+                   
+                    div.appendChild(usernameSpan);
+                    div.appendChild(button);
+                    userList.appendChild(div);
+                    
                 });
             } catch (error) {
                 console.error('Error:', error);
@@ -171,7 +171,32 @@
                 console.error('Error:', error);
             }
         }
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+        try {
+            const response = await fetch('/logout', {
+            method: 'POST',
+            });
 
+            if (response.ok) {
+            window.location.href = '/index.html';
+            } else {
+            console.error('Logout failed');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+        });
+
+        // Profile page navigation
+        document.getElementById('profileButton').addEventListener('click', () => {
+        window.location.href = '/profile.html';
+        });
+
+        // Users page navigation
+        document.getElementById('usersButton').addEventListener('click', () => {
+        window.location.href = '/users.html';
+        });
         loadUsers();
     </script>
 </body>
